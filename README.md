@@ -2,7 +2,7 @@
 
 **Your campus marketplace — buy, sell, rent, and chat, right from your college email.**
 
-CampusKart is a full-stack college marketplace built as a final-year B.Tech CSE project at KIIT University. It lets students list textbooks, cycles, gadgets, and dorm essentials for sale, rent, donation, or exchange — with real-time chat, wishlists, reviews, and campus-only sign-up baked in.
+CampusKart is a full-stack campus marketplace platform that enables college students to buy, sell, rent, donate, and exchange textbooks, bicycles, electronics, and other essentials within their campus community. The platform features secure campus-only authentication, real time messaging, wishlists, ratings and reviews, product search and filtering, and a modern responsive interface designed to simplify student to student transactions.
 
 Live demo: _add your deployed link here_
 
