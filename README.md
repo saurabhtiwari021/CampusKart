@@ -1,58 +1,190 @@
-# CampusKart — Frontend (Vite)
+# CampusKart 🛍️
 
-Phase 6 output: the CDN/Babel-in-browser frontend (`frontend/`) migrated to a
-proper Vite build. Same app, same features, same visual output — different
-build tool. No component logic, styling, or backend contract changed.
+**Your campus marketplace — buy, sell, rent, and chat, right from your college email.**
 
-## What changed
+CampusKart is a full-stack college marketplace built as a final-year B.Tech CSE project at KIIT University. It lets students list textbooks, cycles, gadgets, and dorm essentials for sale, rent, donation, or exchange — with real-time chat, wishlists, reviews, and campus-only sign-up baked in.
 
-- **Build tool**: CDN `<script>` tags + in-browser Babel → Vite + esbuild/Rollup.
-- **Modules**: implicit globals (`window.X` via `app-loader.js`) → explicit
-  ES `import`/`export` in every file.
-- **Routing**: hand-rolled `window.location.hash` + `page` state in
-  `AppContext` → `react-router-dom` (`HashRouter`, `<Routes>`/`<Route>`,
-  `useNavigate`, `useSearchParams`, `useParams`). URLs are still hash-based
-  (`#/marketplace`, `#/listing/:id`, etc.), so this is routing-library-only,
-  not a URL-scheme change.
-- **Socket.io**: CDN global `io()` → `socket.io-client` npm package,
-  `import { io } from 'socket.io-client'` in `AppContext.jsx`.
-- **Env config**: `window.CK_API_URL` / `window.CK_SOCKET_URL` →
-  `import.meta.env.VITE_API_URL` / `VITE_SOCKET_URL`, set via `.env`.
-- **Tailwind**: CDN `<script src="cdn.tailwindcss.com">` + runtime config →
-  `tailwindcss` + `postcss` + `autoprefixer` as a real build step.
-  `tailwind.config.js` is a 1:1 port of the old `js/tailwind-config.js`
-  theme extension (same colors, fonts, keyframes).
+Live demo: _add your deployed link here_
 
-**Not changed**: `api.js`'s `apiFetch` wrapper is still fetch-based — the
-plan calls the Axios swap optional and says not to mix it into this step.
-Swap it later, in its own commit, if you still want it.
+---
 
-## Setup
+## 📸 Screenshots
 
+**Landing page**
+![Landing page](screenshots/01-landing.png)
+
+**Login / Sign up (KIIT email only)**
+![Auth page](screenshots/02-auth.png)
+
+**Marketplace with filters**
+![Marketplace](screenshots/03-marketplace.png)
+
+**User dashboard**
+![Dashboard](screenshots/04-dashboard.png)
+
+---
+
+## ✨ Features
+
+- **Campus-only auth** — sign-up restricted to `@kiit.ac.in` emails, JWT-based sessions
+- **Listings** — create, edit, delete listings across Sell / Rent / Donate / Exchange, with multi-image upload via Cloudinary
+- **Search & filters** — full-text relevance search, category/type/condition/price filters, all server-side
+- **Wishlist** — save listings for later, one tap
+- **Real-time chat** — Socket.io-powered private conversations per listing, with typing indicators, seen receipts, and in-chat image sharing
+- **Notifications** — live updates for new messages, wishlist saves, and reviews
+- **Reviews & ratings** — buyers can review sellers after a completed sale/rental; seller rating updates automatically
+- **Rent calendar** — date-range availability and booking for rental listings
+- **Fraud detection** — new listings priced far below category average are automatically flagged for admin review
+- **Admin panel** — user management (ban/unban), listing moderation, report resolution, and platform stats
+- **Reporting** — users can report suspicious listings or other users
+
+---
+
+## 🛠️ Tech Stack
+
+**Frontend**
+- React 18 (Vite)
+- React Router
+- Tailwind CSS
+- Socket.io Client
+
+**Backend**
+- Node.js + Express
+- MongoDB + Mongoose
+- Socket.io
+- JWT authentication
+- Cloudinary (image storage)
+- Multer (file uploads)
+
+---
+
+## 📁 Project Structure
+
+```
+campuskart/
+├── backend/
+│   ├── src/
+│   │   ├── config/         # DB + Cloudinary setup
+│   │   ├── controllers/    # Route handlers
+│   │   ├── middleware/     # Auth, admin guard, error handling
+│   │   ├── models/         # Mongoose schemas
+│   │   ├── routes/         # Express routers
+│   │   ├── socket/         # Socket.io server + event handlers
+│   │   └── utils/          # ApiError, ApiResponse, asyncHandler, notify
+│   └── server.js
+│
+└── frontend/
+    ├── src/
+    │   ├── *.jsx            # Page + feature components
+    │   ├── AppContext.jsx   # Global state (auth, listings, wishlist, socket)
+    │   └── api.js           # Backend API client
+    └── vite.config.js
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- A MongoDB Atlas cluster (or local MongoDB)
+- A free Cloudinary account
+
+### 1. Clone the repo
 ```bash
+git clone https://github.com/<your-username>/campuskart.git
+cd campuskart
+```
+
+### 2. Backend setup
+```bash
+cd backend
 npm install
-cp .env.example .env   # already done in this delivery; edit if your backend
-                        # runs somewhere other than localhost:5000
+cp .env.example .env   # fill in the values below
 npm run dev
 ```
 
-The backend's `FRONTEND_URL` (used for CORS) currently defaults to
-`http://localhost:8000` in `.env.example` — the old static-server port.
-Update your backend `.env` to `FRONTEND_URL=http://localhost:5173` (Vite's
-default dev port) or CORS will block requests from the new dev server.
+**Backend `.env` variables:**
 
-## Verifying the migration (plan step 8)
+| Variable | Description |
+|---|---|
+| `PORT` | Port for the Express server (default `5000`) |
+| `MONGODB_URI` | MongoDB Atlas connection string |
+| `JWT_SECRET` | Long random string for signing JWTs |
+| `JWT_EXPIRES_IN` | Token lifetime (e.g. `7d`) |
+| `FRONTEND_URL` | Frontend origin(s), comma-separated, for CORS + Socket.io |
+| `ALLOWED_EMAIL_DOMAINS` | Comma-separated list of allowed sign-up email domains |
+| `CLOUDINARY_CLOUD_NAME` | From your Cloudinary dashboard |
+| `CLOUDINARY_API_KEY` | From your Cloudinary dashboard |
+| `CLOUDINARY_API_SECRET` | From your Cloudinary dashboard |
 
-Run `npm run dev` against your existing, unchanged backend and walk through
-every flow from Phases 1–5: login/register, browse + search + filter
-marketplace, create a listing, wishlist, chat (including typing indicator +
-unread badges), notifications, and leaving/viewing reviews. If all of it
-behaves exactly like the CDN version, the migration is done — anything
-broken is a migration bug, not a feature bug, since nothing else changed.
-
-## Production build
-
+### 3. Frontend setup
 ```bash
-npm run build     # outputs to dist/
-npm run preview   # serve the production build locally to sanity-check it
+cd frontend
+npm install
+cp .env.example .env   # fill in the values below
+npm run dev
 ```
+
+**Frontend `.env` variables:**
+
+| Variable | Description |
+|---|---|
+| `VITE_API_URL` | Backend API base URL, e.g. `http://localhost:5000/api` |
+| `VITE_SOCKET_URL` | Backend base URL for Socket.io, e.g. `http://localhost:5000` |
+
+The app will be running at `http://localhost:5173` (frontend) and `http://localhost:5000` (backend API).
+
+---
+
+## 🧭 API Overview
+
+| Resource | Base route |
+|---|---|
+| Auth | `/api/auth` |
+| Listings | `/api/listings` |
+| Wishlist | `/api/wishlist` |
+| Chats & messages | `/api/chats` |
+| Reviews | `/api/reviews` |
+| Notifications | `/api/notifications` |
+| Reports | `/api/reports` |
+| Bookings (rentals) | `/api/bookings` |
+| Admin | `/api/admin` |
+
+All protected routes require a `Bearer <token>` header, obtained from `/api/auth/login`.
+
+---
+
+## 🔌 Real-Time Events (Socket.io)
+
+| Event | Direction | Purpose |
+|---|---|---|
+| `join_chat` | client → server | Join a private chat room, marks messages seen |
+| `send_message` | client → server | Send a text message |
+| `new_message` | server → client | New message broadcast to both participants |
+| `typing` | both | Typing indicator, throttled client-side |
+| `messages_seen` | server → client | Seen-receipt update |
+| `notification:new` | server → client | Live notification (new message, wishlist, review) |
+
+---
+
+## 🗺️ Roadmap / Possible Extensions
+
+- Payment integration for completed sales
+- Email verification and password reset flow
+- Push notifications (mobile)
+- Order history and transaction records
+
+---
+
+## 👤 Author
+
+**Saurabh Tiwari** — Final-year B.Tech CSE, KIIT University
+
+Built as a full-stack academic project focused on real-world campus commerce, emphasizing scalable architecture, real-time communication, secure authentication, and modern web development practices.
+---
+
+## 📄 License
+
+**All Rights Reserved.** This project and its source code are proprietary — no part of it may be copied, modified, deployed, or used commercially without explicit written permission. See [LICENSE](LICENSE) for full terms.
+
