@@ -4,7 +4,7 @@
 
 CampusKart is a full-stack campus marketplace platform that enables college students to buy, sell, rent, donate, and exchange textbooks, bicycles, electronics, and other essentials within their campus community. The platform features secure campus-only authentication, real time messaging, wishlists, ratings and reviews, product search and filtering, and a modern responsive interface designed to simplify student to student transactions.
 
-Live demo: _add your deployed link here_
+Live demo: https://campus-kart-one.vercel.app/#/
 
 ---
 
