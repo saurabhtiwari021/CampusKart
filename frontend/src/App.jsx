@@ -1,5 +1,5 @@
-/* ── App Router ───────────────────────────────────────────────────────── */
-import { Routes, Route, useParams } from 'react-router-dom';
+import { Routes, Route, useParams, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { AppProvider } from './AppContext';
 import Landing from './Landing';
 import AuthPage from './Auth';
@@ -10,10 +10,26 @@ import Dashboard from './Dashboard';
 import Profile from './Profile';
 import Admin from './Admin';
 
-// Thin param-reading wrappers so the page components themselves keep the
-// exact same prop-based signatures they had under the old manual router
-// (ListingDetail({ id }), Dashboard({ section }), Profile({ uid })) —
-// nothing inside those files needed to change for the routing swap.
+const pageVariants = {
+  initial: { opacity: 0, y: 10 },
+  enter: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -10 },
+};
+function PageTransition({ children }) {
+  const reduceMotion = useReducedMotion();
+  return (
+    <motion.div
+      variants={reduceMotion ? {} : pageVariants}
+      initial="initial"
+      animate="enter"
+      exit="exit"
+      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 function ListingRoute() {
   const { id } = useParams();
   return <ListingDetail id={id} />;
@@ -28,20 +44,23 @@ function ProfileRoute() {
 }
 
 function App() {
+  const location = useLocation();
   return (
-    <Routes>
-      <Route path="/" element={<Landing/>} />
-      <Route path="/login" element={<AuthPage mode="login"/>} />
-      <Route path="/register" element={<AuthPage mode="register"/>} />
-      <Route path="/marketplace" element={<Marketplace/>} />
-      <Route path="/create" element={<CreateListing/>} />
-      <Route path="/listing/:id" element={<ListingRoute/>} />
-      <Route path="/dashboard" element={<DashboardRoute/>} />
-      <Route path="/dashboard/:section" element={<DashboardRoute/>} />
-      <Route path="/u/:uid" element={<ProfileRoute/>} />
-      <Route path="/admin" element={<Admin/>} />
-      <Route path="*" element={<Landing/>} />
-    </Routes>
+    <AnimatePresence mode="wait" initial={false}>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PageTransition><Landing/></PageTransition>} />
+        <Route path="/login" element={<PageTransition><AuthPage mode="login"/></PageTransition>} />
+        <Route path="/register" element={<PageTransition><AuthPage mode="register"/></PageTransition>} />
+        <Route path="/marketplace" element={<PageTransition><Marketplace/></PageTransition>} />
+        <Route path="/create" element={<PageTransition><CreateListing/></PageTransition>} />
+        <Route path="/listing/:id" element={<PageTransition><ListingRoute/></PageTransition>} />
+        <Route path="/dashboard" element={<PageTransition><DashboardRoute/></PageTransition>} />
+        <Route path="/dashboard/:section" element={<PageTransition><DashboardRoute/></PageTransition>} />
+        <Route path="/u/:uid" element={<PageTransition><ProfileRoute/></PageTransition>} />
+        <Route path="/admin" element={<PageTransition><Admin/></PageTransition>} />
+        <Route path="*" element={<PageTransition><Landing/></PageTransition>} />
+      </Routes>
+    </AnimatePresence>
   );
 }
 

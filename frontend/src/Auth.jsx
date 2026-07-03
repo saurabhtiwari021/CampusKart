@@ -1,8 +1,10 @@
-/* ── Auth Pages ───────────────────────────────────────────────────────── */
 import { useState } from 'react';
+import { BookOpen, Bike, Laptop } from 'lucide-react';
 import { useApp } from './AppContext';
 import { Ico } from './icons';
 import { api } from './api';
+import handoffPhoto from './assets/campus-handoff.jpg';
+import sellStallPhoto from './assets/campus-sell-stall.jpg';
 
 function AuthPage({ mode }) {
   const { login, navigate, toast } = useApp();
@@ -19,13 +21,13 @@ function AuthPage({ mode }) {
         if (!form.email || !form.password) { toast.error('Fill in all fields'); return; }
         const { data } = await api.login(form.email.trim(), form.password);
         login(data.user, data.token);
-        toast.success('Welcome back! 👋'); navigate('/dashboard');
+        toast.success('Welcome back!'); navigate('/dashboard');
       } else {
         if (!form.name || !form.email || !form.password) { toast.error('Fill in all fields'); return; }
         if (form.password.length < 6) { toast.error('Password must be 6+ characters'); return; }
         const { data } = await api.signup(form.name.trim(), form.email.trim(), form.password);
         login(data.user, data.token);
-        toast.success('Account created! Welcome 🎉'); navigate('/dashboard');
+        toast.success('Account created! Welcome aboard'); navigate('/dashboard');
       }
     } catch (err) {
       toast.error(err.message || 'Something went wrong');
@@ -38,21 +40,27 @@ function AuthPage({ mode }) {
     <div className="auth-wrap">
       {/* Brand side */}
       <div className="auth-side">
+        <div className="auth-side-bg" style={{backgroundImage:`url(${handoffPhoto})`}}/>
+        <div className="auth-side-scrim"/>
         <div style={{position:'absolute',bottom:-80,right:-80,width:300,height:300,borderRadius:'50%',background:'rgba(255,255,255,.12)'}}/>
         <div style={{position:'absolute',top:80,right:60,width:120,height:120,borderRadius:'50%',background:'rgba(255,205,60,.25)'}}/>
-        <button className="logo" style={{color:'#fff',background:'none',border:'none',cursor:'pointer'}} onClick={()=>navigate('/')}>
+        <button className="logo" style={{color:'#fff',background:'none',border:'none',cursor:'pointer',position:'relative',zIndex:1}} onClick={()=>navigate('/')}>
           <div style={{background:'rgba(255,255,255,.2)',border:'2px solid rgba(255,255,255,.5)',borderRadius:10,width:38,height:38,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:800,transform:'rotate(-4deg)'}}>C</div>
           CampusKart
         </button>
         <div style={{position:'relative',zIndex:1}}>
           <h2 style={{fontFamily:'var(--font-display)',fontSize:'2.4rem',fontWeight:800,lineHeight:1.05,marginBottom:16}}>Your campus<br/>marketplace.</h2>
           <p style={{color:'rgba(255,255,255,.75)',maxWidth:'32ch'}}>Buy, sell, rent and exchange with students on your campus. Textbooks, cycles, gadgets and more.</p>
-          <div style={{marginTop:32,display:'flex',flexDirection:'column',gap:12}}>
-            {['📚 Textbooks from ₹50','🚲 Rent cycles by the month','💻 Verified campus sellers'].map(t=>(
-              <div key={t} style={{display:'flex',alignItems:'center',gap:12,color:'rgba(255,255,255,.9)',fontWeight:600,fontSize:'.95rem'}}>
-                {t}
+          <div className="flex flex-col gap-3 mt-8">
+            {[[BookOpen,'Textbooks from ₹50'],[Bike,'Rent cycles by the month'],[Laptop,'Verified campus sellers']].map(([Icon,t])=>(
+              <div key={t} className="flex items-center gap-3 text-white/90 font-semibold text-[.95rem]">
+                <Icon className="w-5 h-5 flex-shrink-0" strokeWidth={2}/> {t}
               </div>
             ))}
+          </div>
+          <div className="auth-side-photo">
+            <img src={sellStallPhoto} alt="Students trading items at a campus sell stall"/>
+            <span className="auth-side-photo-tag">Live campus trades</span>
           </div>
         </div>
         <p style={{color:'rgba(255,255,255,.5)',fontSize:'.8rem',position:'relative',zIndex:1}}>10,000+ students trading daily</p>
@@ -60,6 +68,7 @@ function AuthPage({ mode }) {
 
       {/* Form side */}
       <div className="auth-form-side">
+        <div className="auth-form-glow"/>
         <div className="auth-box">
           <button className="logo" style={{background:'none',border:'none',cursor:'pointer',marginBottom:24}} onClick={()=>navigate('/')}>
             <div className="mark">C</div>

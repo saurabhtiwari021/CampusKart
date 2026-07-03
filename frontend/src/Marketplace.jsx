@@ -1,6 +1,6 @@
-/* ── Marketplace ──────────────────────────────────────────────────────── */
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Package } from 'lucide-react';
 import { useApp } from './AppContext';
 import Navbar from './NavBar';
 import { Ico } from './icons';
@@ -11,14 +11,8 @@ import { api } from './api';
 
 function Marketplace() {
   const { navigate, toast } = useApp();
-  // Only the initial values are used (same as before — typing/filtering
-  // afterwards never re-reads the URL), so a single useSearchParams() read
-  // on mount replaces the old manual window.location.hash parsing.
   const [searchParams] = useSearchParams();
 
-  // `search` is the live text box value; it only feeds a request once submitted
-  // (Enter / Search button), at which point it's copied into `appliedSearch` —
-  // that's the value that actually goes into the API query.
   const [search, setSearch] = useState(() => searchParams.get('q') || '');
   const [appliedSearch, setAppliedSearch] = useState(() => searchParams.get('q') || '');
 
@@ -27,9 +21,6 @@ function Marketplace() {
   const [condition, setCondition] = useState('');
   const [sort, setSort] = useState('latest');
 
-  // Price slider: maxPrice is what's shown on the label while dragging;
-  // appliedMaxPrice only updates on release, so dragging doesn't fire a
-  // request per pixel — it commits once, the same way search commits on submit.
   const [maxPrice, setMaxPrice] = useState(30000);
   const [appliedMaxPrice, setAppliedMaxPrice] = useState(30000);
 
@@ -47,9 +38,6 @@ function Marketplace() {
       .finally(() => setLoading(false));
   };
 
-  // Every dependency here is a "committed" value — appliedSearch (not search)
-  // and appliedMaxPrice (not maxPrice) — so typing/dragging alone never
-  // triggers a fetch, only submitting/releasing does.
   useEffect(fetchResults, [appliedSearch, category, type, condition, appliedMaxPrice, sort]);
 
   const submitSearch = (e) => {
@@ -83,9 +71,9 @@ function Marketplace() {
               <option value="price_high">Price: High to Low</option>
               <option value="popular">Most Popular</option>
             </select>
-            <div style={{display:'flex',borderRadius:999,border:'var(--bw) solid var(--ink)',overflow:'hidden'}}>
-              <button onClick={()=>setView('grid')} style={{padding:'9px 12px',background:view==='grid'?'var(--ink)':'var(--white)',color:view==='grid'?'var(--cream)':'var(--ink)',border:'none',cursor:'pointer'}}><Ico n="grid" c="w-4 h-4"/></button>
-              <button onClick={()=>setView('list')} style={{padding:'9px 12px',background:view==='list'?'var(--ink)':'var(--white)',color:view==='list'?'var(--cream)':'var(--ink)',border:'none',borderLeft:'var(--bw) solid var(--ink)',cursor:'pointer'}}><Ico n="list" c="w-4 h-4"/></button>
+            <div style={{display:'flex',borderRadius:999,border:'1.5px solid var(--border-strong)',overflow:'hidden',boxShadow:'var(--sh-1) var(--shadow-col)'}}>
+              <button onClick={()=>setView('grid')} style={{padding:'9px 12px',background:view==='grid'?'var(--ink)':'var(--white)',color:view==='grid'?'var(--cream)':'var(--ink)',border:'none',cursor:'pointer',transition:'background .18s ease'}}><Ico n="grid" c="w-4 h-4"/></button>
+              <button onClick={()=>setView('list')} style={{padding:'9px 12px',background:view==='list'?'var(--ink)':'var(--white)',color:view==='list'?'var(--cream)':'var(--ink)',border:'none',borderLeft:'1.5px solid var(--border-strong)',cursor:'pointer',transition:'background .18s ease'}}><Ico n="list" c="w-4 h-4"/></button>
             </div>
           </div>
         </div>
@@ -152,17 +140,17 @@ function Marketplace() {
               <div className="grid-listings">{Array.from({length:9}).map((_,i)=><CardSkeleton key={i}/>)}</div>
             ) : results.length===0 ? (
               <div className="empty-state">
-                <div style={{fontSize:80,marginBottom:16}}>📦</div>
-                <h3>Nothing here yet!</h3>
+                <div className="icon-wrap"><Package className="w-11 h-11" strokeWidth={1.75}/></div>
+                <h3>Nothing here yet</h3>
                 <p style={{color:'var(--text-soft)',marginBottom:24}}>Try adjusting your filters or search query.</p>
-                <button className="btn btn-primary" onClick={clearFilters}>Clear Filters</button>
+                <button className="btn btn-primary" onClick={clearFilters}>Clear filters</button>
               </div>
             ) : (
               <div className={view==='grid' ? 'grid-listings' : ''} style={view==='list'?{display:'flex',flexDirection:'column',gap:16}:{}}>
                 {results.map((l,i)=>(
                   view==='list' ? (
                     <div key={l.id} className="table-row" style={{cursor:'pointer'}} onClick={()=>navigate(`/listing/${l.id}`)}>
-                      <img src={l.images?.[0]||'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=300&q=80'} alt={l.title} style={{width:80,height:80,borderRadius:12,objectFit:'cover',border:'2.5px solid var(--ink)',flexShrink:0}}/>
+                      <img src={l.images?.[0]||'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=300&q=80'} alt={l.title} className="w-20 h-20 aspect-square object-cover rounded-xl flex-shrink-0" style={{border:'1.5px solid var(--border-strong)'}}/>
                       <div className="grow">
                         <div className="ttl">{l.title}</div>
                         <div style={{fontSize:'.82rem',color:'var(--text-soft)',marginTop:4}}>{l.category} · {l.condition} · {l.location}</div>

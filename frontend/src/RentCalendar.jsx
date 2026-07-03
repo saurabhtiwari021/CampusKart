@@ -1,7 +1,7 @@
-/* ── Rent Calendar ────────────────────────────────────────────────────── */
 import { useState, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/style.css';
+import { CheckCircle2 } from 'lucide-react';
 import { useApp } from './AppContext';
 import { Ico } from './icons';
 import { api } from './api';
@@ -9,13 +9,6 @@ import { api } from './api';
 const fmt = (d) => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
 
-/**
- * Availability calendar for a 'rent' listing. Fetches existing bookings for
- * this listing and greys them out; picking a free range and confirming
- * hits POST /api/bookings, where the actual overlap check happens
- * server-side — this component doesn't need to re-derive that logic, just
- * reflect what the backend already knows about.
- */
 export function RentCalendar({ listing }) {
   const { user, navigate, toast } = useApp();
   const [bookings, setBookings] = useState([]);
@@ -80,8 +73,8 @@ export function RentCalendar({ listing }) {
             {submitting ? <Ico n="loader" c="w-4 h-4 spin" /> : user ? 'Request Booking' : 'Log in to book'}
           </button>
           {justBooked && (
-            <p style={{ marginTop: 10, fontSize: '.85rem', fontWeight: 700, color: 'var(--teal)' }}>
-              ✅ Booked! Those dates are now reserved for you.
+            <p className="flex items-center gap-1.5" style={{ marginTop: 10, fontSize: '.85rem', fontWeight: 700, color: 'var(--teal)' }}>
+              <CheckCircle2 className="w-4 h-4" strokeWidth={2.25}/> Booked! Those dates are now reserved for you.
             </p>
           )}
         </div>

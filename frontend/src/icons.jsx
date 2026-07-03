@@ -1,4 +1,3 @@
-/* ── Icon components ─────────────────────────────────────────────────── */
 export const Ico = ({ n, c = "w-5 h-5", style }) => {
   const p = {
     search: <><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M21 21l-4.3-4.3"/></>,

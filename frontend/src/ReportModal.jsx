@@ -1,10 +1,9 @@
-/* ── Report Modal ─────────────────────────────────────────────────────── */
 import { useState } from 'react';
 import { useApp } from './AppContext';
 import { Ico } from './icons';
 import { api } from './api';
 
-/** target: { type: 'listing'|'user', id, label } */
+/* Target: { type: 'listing'|'user', id, label } */
 export function ReportModal({ target, onClose }) {
   const { toast } = useApp();
   const [reason, setReason] = useState('');

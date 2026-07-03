@@ -1,5 +1,5 @@
-/* ── Profile ──────────────────────────────────────────────────────────── */
 import { useState, useEffect } from 'react';
+import { Package, Star, MessageCircle, Trophy, BookOpen, Rocket } from 'lucide-react';
 import { useApp } from './AppContext';
 import Navbar from './NavBar';
 import { Ico } from './icons';
@@ -42,7 +42,7 @@ function Profile({ uid: profileId }) {
             <h1 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'1.6rem',display:'flex',alignItems:'center',gap:10}}>
               {profileUser.name} <Ico n="shield" c="w-5 h-5" style={{stroke:'#3b82f6'}}/>
             </h1>
-            <p style={{color:'var(--text-soft)',fontSize:'.9rem'}}>{profileUser.college} · ⭐ {profileUser.rating||'New'} · {profileUser.review_count} reviews</p>
+            <p className="flex items-center gap-1 flex-wrap" style={{color:'var(--text-soft)',fontSize:'.9rem'}}>{profileUser.college} · <Star className="w-3.5 h-3.5" style={{fill:'var(--yellow)',stroke:'var(--ink)'}}/> {profileUser.rating||'New'} · {profileUser.review_count} reviews</p>
           </div>
           {user?.user_id === profileId && (
             <button className="btn btn-sm ml-auto" style={{marginLeft:'auto',marginBottom:12}} onClick={()=>navigate('/dashboard/settings')}>
@@ -57,10 +57,10 @@ function Profile({ uid: profileId }) {
         </div>
 
         <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12,marginTop:24,maxWidth:480}}>
-          {[['📦',profileListings.length,'Listings'],['⭐',profileUser.rating||0,'Rating'],['💬',profileUser.review_count,'Reviews']].map(([e,v,l])=>(
+          {[[Package,profileListings.length,'Listings'],[Star,profileUser.rating||0,'Rating'],[MessageCircle,profileUser.review_count,'Reviews']].map(([Icon,v,l])=>(
             <div key={l} className="card" style={{textAlign:'center',padding:'16px 10px'}}>
               <div style={{fontSize:'1.6rem',fontWeight:800,fontFamily:'var(--font-display)'}}>{v}</div>
-              <div style={{fontSize:'.78rem',color:'var(--text-soft)',fontWeight:600,marginTop:2}}>{e} {l}</div>
+              <div className="flex items-center justify-center gap-1" style={{fontSize:'.78rem',color:'var(--text-soft)',fontWeight:600,marginTop:2}}><Icon className="w-3.5 h-3.5" strokeWidth={2}/> {l}</div>
             </div>
           ))}
         </div>
@@ -73,24 +73,26 @@ function Profile({ uid: profileId }) {
 
         {tab==='listings' && (
           profileListings.length===0 ? (
-            <div className="empty-state"><div style={{fontSize:64}}>📦</div><h3>No listings yet</h3></div>
+            <div className="empty-state"><div className="icon-wrap"><Package className="w-11 h-11" strokeWidth={1.75}/></div><h3>No listings yet</h3></div>
           ) : (
             <div className="grid-listings">{profileListings.map((l,i)=><ListingCard key={l.id} listing={l} index={i}/>)}</div>
           )
         )}
         {tab==='reviews' && (
           reviewsLoading ? (
-            <div style={{display:'flex',justifyContent:'center',padding:40}}><Ico n="loader" c="w-6 h-6 spin"/></div>
+            <div className="flex justify-center p-10"><Ico n="loader" c="w-6 h-6 spin"/></div>
           ) : profileReviews.length===0 ? (
-            <div className="empty-state"><div style={{fontSize:64}}>⭐</div><h3>No reviews yet</h3><p style={{color:'var(--text-soft)'}}>Reviews appear after completed trades.</p></div>
+            <div className="empty-state"><div className="icon-wrap"><Star className="w-11 h-11" strokeWidth={1.75}/></div><h3>No reviews yet</h3><p style={{color:'var(--text-soft)'}}>Reviews appear after completed trades.</p></div>
           ) : (
             <ReviewList reviews={profileReviews}/>
           )
         )}
         {tab==='achievements' && (
           <div style={{display:'flex',flexWrap:'wrap',gap:12,marginTop:16}}>
-            {['🥇 First Sale','📚 Book Dealer','⭐ Top Rated','🚀 Early Adopter'].map(a=>(
-              <div key={a} style={{display:'flex',alignItems:'center',gap:8,padding:'10px 18px',borderRadius:999,border:'2.5px solid var(--ink)',background:'var(--yellow)',fontWeight:700,fontSize:'.88rem',boxShadow:'var(--sh-1) var(--shadow-col)'}}>{a}</div>
+            {[[Trophy,'First Sale'],[BookOpen,'Book Dealer'],[Star,'Top Rated'],[Rocket,'Early Adopter']].map(([Icon,a])=>(
+              <div key={a} className="flex items-center gap-2" style={{padding:'10px 18px',borderRadius:999,border:'2.5px solid var(--ink)',background:'var(--yellow)',fontWeight:700,fontSize:'.88rem',boxShadow:'var(--sh-1) var(--shadow-col)'}}>
+                <Icon className="w-4 h-4" strokeWidth={2.25}/> {a}
+              </div>
             ))}
           </div>
         )}

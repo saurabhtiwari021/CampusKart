@@ -1,19 +1,13 @@
-/* ── Reviews (shared components) ─────────────────────────────────────────
- * Used by Listing.js (leave a review) and Profile.js / Dashboard.js
- * (display reviews a seller has received).
- */
 import { useState } from 'react';
 import { useApp } from './AppContext';
 import { Ico } from './icons';
 import { timeAgo } from './utils';
 import { api } from './api';
 
-/** Row of 5 stars. Pass `value` + `onChange` for an interactive picker, or
- * just `value` for a read-only display. */
 function StarRating({ value, onChange, size=20 }) {
   const interactive = typeof onChange === 'function';
   return (
-    <div style={{display:'flex',gap:4}}>
+    <div className="flex gap-1">
       {[1,2,3,4,5].map(n => (
         <button
           key={n}
@@ -61,11 +55,6 @@ export function ReviewList({ reviews }) {
   return <div>{reviews.map(r => <ReviewCard key={r.id} review={r}/>)}</div>;
 }
 
-/**
- * Leave-a-review form for a single listing. Gating (who's allowed to submit)
- * is enforced server-side — this form just submits and surfaces whatever
- * error the backend returns (e.g. "not sold yet", "already reviewed").
- */
 export function ReviewForm({ listingId, onSubmitted }) {
   const { toast } = useApp();
   const [rating, setRating] = useState(0);

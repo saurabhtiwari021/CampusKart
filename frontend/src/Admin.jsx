@@ -1,5 +1,5 @@
-/* ── Admin Panel ──────────────────────────────────────────────────────── */
 import { useState, useEffect } from 'react';
+import { Lock, ShieldCheck, Ban, Flag, Users, Package, CheckCircle2 } from 'lucide-react';
 import { useApp } from './AppContext';
 import Navbar from './NavBar';
 import { Ico } from './icons';
@@ -26,9 +26,6 @@ function Admin() {
 
   const isAdmin = user && user.role === 'admin';
 
-  // Client-side gating is just UX (don't show the link, redirect away if a
-  // non-admin somehow lands on /admin) — the real enforcement is the
-  // isAdmin middleware on the backend.
   useEffect(() => {
     if (user && !isAdmin) navigate('/');
   }, [user, isAdmin]);
@@ -96,8 +93,8 @@ function Admin() {
   };
 
   if (!user) {
-    return (<div style={{minHeight:'100vh'}}><Navbar/><div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'70vh',flexDirection:'column',gap:16}}>
-      <div style={{fontSize:64}}>🔒</div>
+    return (<div style={{minHeight:'100vh'}}><Navbar/><div className="flex items-center justify-center flex-col gap-4" style={{minHeight:'70vh'}}>
+      <Lock className="w-16 h-16" strokeWidth={1.5} style={{color:'var(--text-soft)'}}/>
       <h2 style={{fontFamily:'var(--font-display)',fontWeight:800}}>Sign in to access the admin panel</h2>
       <button className="btn btn-primary" onClick={()=>navigate('/login')}>Sign in</button>
     </div></div>);
@@ -136,10 +133,10 @@ function Admin() {
             {/* OVERVIEW */}
             {section==='overview' && (
               <div>
-                <h1 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'1.8rem',marginBottom:6}}>Admin Overview 🛡️</h1>
+                <h1 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'1.8rem',marginBottom:6}}><ShieldCheck className="w-7 h-7" strokeWidth={2}/> Admin Overview</h1>
                 <p style={{color:'var(--text-soft)',marginBottom:24}}>A quick snapshot of what's happening across CampusKart.</p>
                 {statsLoading || !stats ? (
-                  <div style={{display:'flex',justifyContent:'center',padding:40}}><Ico n="loader" c="w-6 h-6 spin"/></div>
+                  <div className="flex justify-center p-10"><Ico n="loader" c="w-6 h-6 spin"/></div>
                 ) : (
                   <div className="dash-cards">
                     {[
@@ -166,21 +163,21 @@ function Admin() {
               <div>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20,gap:12,flexWrap:'wrap'}}>
                   <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'1.6rem'}}>Users ({users.length})</h2>
-                  <form onSubmit={(e)=>{e.preventDefault();loadUsers(userSearch);}} style={{display:'flex',gap:8}}>
+                  <form onSubmit={(e)=>{e.preventDefault();loadUsers(userSearch);}} className="flex gap-2">
                     <input className="input" style={{padding:'9px 14px',width:220}} value={userSearch} onChange={e=>setUserSearch(e.target.value)} placeholder="Search by name or email"/>
                     <button className="btn btn-sm" type="submit">Search</button>
                   </form>
                 </div>
                 {usersLoading ? (
-                  <div style={{display:'flex',justifyContent:'center',padding:40}}><Ico n="loader" c="w-6 h-6 spin"/></div>
+                  <div className="flex justify-center p-10"><Ico n="loader" c="w-6 h-6 spin"/></div>
                 ) : users.length===0 ? (
-                  <div className="empty-state"><div style={{fontSize:64}}>👤</div><h3>No users found</h3></div>
+                  <div className="empty-state"><div className="icon-wrap"><Users className="w-11 h-11" strokeWidth={1.75}/></div><h3>No users found</h3></div>
                 ) : users.map(u=>(
                   <div key={u.user_id} className="table-row">
                     <div className="avatar" style={{flexShrink:0}}>{u.name?.[0]?.toUpperCase()}</div>
                     <div className="grow">
                       <div className="ttl">{u.name} {u.role==='admin' && <span className="tag" style={{marginLeft:6}}>admin</span>}</div>
-                      <div style={{fontSize:'.82rem',color:'var(--text-soft)',marginTop:4}}>{u.email} · {u.college}{u.isBlocked && ' · 🚫 Banned'}</div>
+                      <div className="flex items-center gap-1 flex-wrap" style={{fontSize:'.82rem',color:'var(--text-soft)',marginTop:4}}>{u.email} · {u.college}{u.isBlocked && <span className="flex items-center gap-1">· <Ban className="w-3 h-3" strokeWidth={2}/> Banned</span>}</div>
                     </div>
                     <div style={{display:'flex',gap:8,flexShrink:0}}>
                       <button className="btn btn-sm" onClick={()=>navigate(`/u/${u.user_id}`)}>View</button>
@@ -200,21 +197,21 @@ function Admin() {
               <div>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20,gap:12,flexWrap:'wrap'}}>
                   <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'1.6rem'}}>All Listings ({listings.length})</h2>
-                  <label style={{display:'flex',alignItems:'center',gap:8,fontWeight:600,fontSize:'.88rem',cursor:'pointer'}}>
+                  <label className="flex items-center gap-2" style={{fontWeight:600,fontSize:'.88rem',cursor:'pointer'}}>
                     <input type="checkbox" checked={flaggedOnly} onChange={e=>{const v=e.target.checked;setFlaggedOnly(v);loadListings(v);}} style={{width:18,height:18,accentColor:'var(--coral)'}}/>
-                    🚩 Flagged only
+                    <Flag className="w-4 h-4" strokeWidth={2}/> Flagged only
                   </label>
                 </div>
                 {listingsLoading ? (
-                  <div style={{display:'flex',justifyContent:'center',padding:40}}><Ico n="loader" c="w-6 h-6 spin"/></div>
+                  <div className="flex justify-center p-10"><Ico n="loader" c="w-6 h-6 spin"/></div>
                 ) : listings.length===0 ? (
-                  <div className="empty-state"><div style={{fontSize:64}}>📦</div><h3>{flaggedOnly?'No flagged listings':'No listings'}</h3></div>
+                  <div className="empty-state"><div className="icon-wrap"><Package className="w-11 h-11" strokeWidth={1.75}/></div><h3>{flaggedOnly?'No flagged listings':'No listings'}</h3></div>
                 ) : listings.map(l=>(
                   <div key={l.id} className="table-row">
                     <img src={l.images?.[0]||'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=200&q=80'} alt={l.title}/>
                     <div className="grow">
-                      <div className="ttl">{l.title} {l.flagged && <span className="tag" style={{marginLeft:6,background:'var(--coral)',color:'#fff',borderColor:'var(--coral)'}}>🚩 flagged — underpriced</span>}</div>
-                      <div style={{fontSize:'.82rem',color:'var(--text-soft)',marginTop:4}}>{l.category} · {inr(l.price)} · by {l.owner?.name} · {timeAgo(l.created_at)}{l.status==='removed' && ' · 🚫 removed'}</div>
+                      <div className="ttl flex items-center gap-1 flex-wrap">{l.title} {l.flagged && <span className="tag flex items-center gap-1" style={{background:'var(--coral)',color:'#fff',borderColor:'var(--coral)'}}><Flag className="w-3 h-3" strokeWidth={2}/> flagged — underpriced</span>}</div>
+                      <div className="flex items-center gap-1 flex-wrap" style={{fontSize:'.82rem',color:'var(--text-soft)',marginTop:4}}>{l.category} · {inr(l.price)} · by {l.owner?.name} · {timeAgo(l.created_at)}{l.status==='removed' && <span className="flex items-center gap-1">· <Ban className="w-3 h-3" strokeWidth={2}/> removed</span>}</div>
                     </div>
                     <div style={{display:'flex',gap:8,flexShrink:0}}>
                       <button className="btn btn-sm" onClick={()=>navigate(`/listing/${l.id}`)}>View</button>
@@ -235,15 +232,15 @@ function Admin() {
               <div>
                 <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'1.6rem',marginBottom:20}}>Reports ({reports.length})</h2>
                 {reportsLoading ? (
-                  <div style={{display:'flex',justifyContent:'center',padding:40}}><Ico n="loader" c="w-6 h-6 spin"/></div>
+                  <div className="flex justify-center p-10"><Ico n="loader" c="w-6 h-6 spin"/></div>
                 ) : reports.length===0 ? (
-                  <div className="empty-state"><div style={{fontSize:64}}>🚩</div><h3>No reports</h3></div>
+                  <div className="empty-state"><div className="icon-wrap"><Flag className="w-11 h-11" strokeWidth={1.75}/></div><h3>No reports</h3></div>
                 ) : reports.map(r=>(
                   <div key={r.id} className={`notif-row ${r.status==='open'?'unread':''}`}>
                     <div style={{flex:1}}>
-                      <p style={{fontWeight:700}}>
+                      <p className="flex items-center gap-2 flex-wrap" style={{fontWeight:700}}>
                         {r.reportedListing ? `Listing: ${r.reportedListing.title}` : `User: ${r.reportedUser?.name}`}
-                        {r.status==='resolved' && <span style={{marginLeft:8,fontWeight:600,fontSize:'.78rem',color:'var(--text-soft)'}}>✅ resolved</span>}
+                        {r.status==='resolved' && <span className="flex items-center gap-1" style={{fontWeight:600,fontSize:'.78rem',color:'var(--text-soft)'}}><CheckCircle2 className="w-3.5 h-3.5" strokeWidth={2}/> resolved</span>}
                       </p>
                       <p style={{marginTop:4}}>{r.reason}</p>
                       <p style={{fontSize:'.8rem',color:'var(--text-soft)',marginTop:4}}>

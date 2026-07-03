@@ -1,4 +1,3 @@
-/* ── Constants ────────────────────────────────────────────────────────── */
 export const CATS = [
   { name:'Books', emoji:'📚', color:'#E8F4FD' },
   { name:'Electronics', emoji:'💻', color:'#F0E8FD' },
@@ -9,6 +8,12 @@ export const CATS = [
   { name:'Stationery', emoji:'✏️', color:'#E8FDFC' },
 ];
 export const CONDITIONS = ['New','Like New','Good','Fair'];
+export const CONDITION_META = {
+  'New': { cls:'condition-new' },
+  'Like New': { cls:'condition-likenew' },
+  'Good': { cls:'condition-good' },
+  'Fair': { cls:'condition-fair' },
+};
 export const TYPES = [['all','All'],['sell','For Sale'],['rent','For Rent'],['donate','Donate'],['exchange','Exchange']];
 export const TYPE_META = {
   sell: { label:'For Sale', cls:'stamp-sell' },

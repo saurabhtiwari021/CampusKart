@@ -1,18 +1,10 @@
-/* ── Chat (Phase 4 — real-time messaging over Socket.io) ─────────────────
- * ChatSection renders inside Dashboard's "chats" tab: a chat list on the
- * left, the active thread on the right (stacked on mobile). It owns all the
- * socket listening for the lifetime it's mounted; ListingDetail's "Chat with
- * seller" modal only needs to create the chat + send the first message, then
- * hands off here via AppContext's openChatId.
- */
 import { useState, useEffect, useRef } from 'react';
+import { MessageCircle, Camera, Hand } from 'lucide-react';
 import { useApp } from './AppContext';
 import { Ico } from './icons';
 import { api } from './api';
 import { timeAgo, timeShort } from './utils';
 
-/** Throttles 'typing' emits to roughly once every 2s, per the spec — a plain
- * timestamp check rather than pulling in a debounce library. */
 function useTypingEmitter(socket, chatId) {
   const lastRef = useRef(0);
   return () => {
@@ -127,7 +119,7 @@ export function ChatSection() {
   if (chats.length === 0) {
     return (
       <div className="empty-state">
-        <div style={{ fontSize: 64 }}>💬</div>
+        <div className="icon-wrap"><MessageCircle className="w-11 h-11" strokeWidth={1.75}/></div>
         <h3>No conversations yet</h3>
         <p style={{ color: 'var(--text-soft)', marginBottom: 20 }}>Message a seller from any listing to start chatting.</p>
         <button className="btn btn-primary" onClick={() => navigate('/marketplace')}>Browse Marketplace</button>
@@ -137,13 +129,13 @@ export function ChatSection() {
 
   return (
     <div>
-      <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.6rem', marginBottom: 20 }}>Chats 💬</h2>
+      <h2 className="flex items-center gap-2" style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.6rem', marginBottom: 20 }}><MessageCircle className="w-6 h-6" strokeWidth={2}/> Chats</h2>
       <div className={`chat-shell ${activeChat ? 'thread-open' : ''}`}>
         {/* List pane */}
         <div className="chat-list-pane">
           {chats.map((c) => {
             const mine = c.lastMessage && c.lastMessage.sender === user.user_id;
-            const preview = c.lastMessage ? (c.lastMessage.image ? '📷 Photo' : c.lastMessage.text) : 'Say hi 👋';
+            const isPhoto = c.lastMessage?.image;
             return (
               <button
                 key={c.id}
@@ -153,7 +145,11 @@ export function ChatSection() {
                 <div className="avatar">{c.otherUser?.name?.[0]?.toUpperCase() || '?'}</div>
                 <div className="grow">
                   <div className="ttl">{c.otherUser?.name || 'Deleted user'}</div>
-                  <div className="preview">{mine && <span style={{ opacity: .7 }}>You: </span>}{preview}</div>
+                  <div className="preview flex items-center gap-1">
+                    {mine && <span className="opacity-70">You: </span>}
+                    {isPhoto && <Camera className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={2}/>}
+                    {c.lastMessage ? (isPhoto ? 'Photo' : c.lastMessage.text) : (<><Hand className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={2}/> Say hi</>)}
+                  </div>
                   <div className="listing-ref">{c.listing?.title}</div>
                 </div>
                 {c.lastMessage && <span className="time">{timeAgo(c.lastMessage.created_at)}</span>}
@@ -255,7 +251,7 @@ function ChatInputBar({ chat, socket }) {
     try {
       const fd = new FormData();
       fd.append('image', file);
-      await api.chats.sendImage(chat.id, fd); // the resulting new_message socket event is what renders it
+      await api.chats.sendImage(chat.id, fd); // the resulting new message socket event is what renders it
     } catch (err) {
       toast.error(err.message || 'Could not send image');
     } finally {

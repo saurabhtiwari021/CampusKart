@@ -1,4 +1,3 @@
-/* ── Navbar ───────────────────────────────────────────────────────────── */
 import { useState, useEffect, useRef } from 'react';
 import { useApp } from './AppContext';
 import { Ico } from './icons';
@@ -7,6 +6,7 @@ function Navbar() {
   const { user, logout, navigate, page, mobileMenu, setMobileMenu, unreadCount } = useApp();
   const [q, setQ] = useState('');
   const [dropOpen, setDropOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const dropRef = useRef(null);
 
   useEffect(() => {
@@ -15,10 +15,17 @@ function Navbar() {
     return () => document.removeEventListener('mousedown', h);
   }, []);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const submit = (e) => { e.preventDefault(); navigate(`/marketplace?q=${encodeURIComponent(q)}`); };
 
   return (
-    <header className="navbar glass" data-testid="navbar">
+    <header className={`navbar glass ${scrolled ? 'scrolled' : ''}`} data-testid="navbar">
       <div className="container navbar-inner">
         {/* Logo */}
         <a href="#/" className="logo" onClick={(e)=>{e.preventDefault();navigate('/');}}>

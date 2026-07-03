@@ -1,5 +1,5 @@
-/* ── Create Listing ───────────────────────────────────────────────────── */
 import { useState, useRef } from 'react';
+import { Lock, Tag, CalendarDays, Gift, Repeat, Rocket } from 'lucide-react';
 import { useApp } from './AppContext';
 import Navbar from './NavBar';
 import { Ico } from './icons';
@@ -15,8 +15,8 @@ function CreateListing() {
   const set = (k) => (e) => setForm(p=>({...p,[k]:e.target.value}));
 
   if (!user) {
-    return (<div style={{minHeight:'100vh'}}><Navbar/><div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'70vh',flexDirection:'column',gap:16}}>
-      <div style={{fontSize:64}}>🔒</div>
+    return (<div style={{minHeight:'100vh'}}><Navbar/><div className="flex items-center justify-center flex-col gap-4" style={{minHeight:'70vh'}}>
+      <Lock className="w-16 h-16" strokeWidth={1.5} style={{color:'var(--text-soft)'}}/>
       <h2 style={{fontFamily:'var(--font-display)',fontWeight:800}}>Sign in to list items</h2>
       <button className="btn btn-primary" onClick={()=>navigate('/login')}>Sign in</button>
     </div></div>);
@@ -61,7 +61,7 @@ function CreateListing() {
       images.forEach(({ file }) => fd.append('images', file));
 
       const listing = await addListing(fd);
-      toast.success(`✅ "${form.title}" listed successfully!`);
+      toast.success(`"${form.title}" listed successfully!`);
       navigate(`/listing/${listing.id}`);
     } catch (err) {
       toast.error(err.message || 'Could not create listing');
@@ -92,10 +92,10 @@ function CreateListing() {
           <div className="field">
             <label>Listing Type</label>
             <div className="radio-cards">
-              {[['sell','🏷️ Sell'],['rent','📅 Rent'],['donate','🎁 Donate'],['exchange','🔄 Exchange']].map(([v,l])=>(
-                <label key={v} className={`radio-card ${form.type===v?'sel':''}`} data-type={v} onClick={()=>setForm(p=>({...p,type:v}))}>
+              {[['sell',Tag,'Sell'],['rent',CalendarDays,'Rent'],['donate',Gift,'Donate'],['exchange',Repeat,'Exchange']].map(([v,Icon,l])=>(
+                <label key={v} className={`radio-card flex items-center justify-center gap-2 ${form.type===v?'sel':''}`} data-type={v} onClick={()=>setForm(p=>({...p,type:v}))}>
                   <input type="radio" name="type" value={v} checked={form.type===v} readOnly/>
-                  {l}
+                  <Icon className="w-4 h-4" strokeWidth={2.25}/> {l}
                 </label>
               ))}
             </div>
@@ -203,7 +203,7 @@ function CreateListing() {
           </div>
 
           <button type="submit" className="btn btn-primary btn-block" disabled={loading} style={{marginTop:8,fontSize:'1.05rem',padding:'16px'}}>
-            {loading ? <><Ico n="loader" c="w-5 h-5 spin"/> Publishing…</> : '🚀 Publish Listing'}
+            {loading ? <><Ico n="loader" c="w-5 h-5 spin"/> Publishing…</> : <><Rocket className="w-5 h-5" strokeWidth={2.25}/> Publish Listing</>}
           </button>
         </form>
       </div>

@@ -1,4 +1,3 @@
-/* ── Utilities ────────────────────────────────────────────────────────── */
 export const uid = () => Math.random().toString(36).slice(2,10);
 export const inr = (n) => n === 0 ? 'Free' : `₹${Number(n).toLocaleString('en-IN')}`;
 export const getLS = (k,d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };

@@ -1,10 +1,13 @@
-/* ── Landing Page ─────────────────────────────────────────────────────── */
 import { useState, useEffect } from 'react';
+import { GraduationCap, ShoppingCart, Tag, Key, Flame, Camera, MessageCircle, Handshake, Heart, ShieldCheck, Sparkles } from 'lucide-react';
 import { useApp } from './AppContext';
 import Navbar from './NavBar';
 import { Ico } from './icons';
 import { ListingCard, CardSkeleton } from './ListingCard';
 import { CATS } from './constants';
+import { Reveal } from './Reveal';
+import HeroIllustration from './HeroIllustration';
+import heroPhoto from './assets/campus-market-preview.jpg';
 
 function Landing() {
   const { listings, navigate } = useApp();
@@ -27,58 +30,60 @@ function Landing() {
     <div>
       <Navbar/>
       {/* Hero */}
-      <section className="hero section">
-        <div style={{position:'absolute',top:-80,right:-80,width:400,height:400,borderRadius:'50%',background:'rgba(108,60,233,.12)',zIndex:0}}/>
-        <div style={{position:'absolute',bottom:20,left:-60,width:260,height:260,borderRadius:'50%',background:'rgba(255,92,114,.1)',zIndex:0}}/>
-        <div className="container" style={{position:'relative',zIndex:1}}>
-          <span className="eyebrow">🎓 By students, for students</span>
-          <h1 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'clamp(2.8rem,7vw,5rem)',lineHeight:.96,letterSpacing:'-.02em',marginTop:20,marginBottom:20}}>
-            Buy. Sell. Rent.<br/><span style={{color:'var(--violet)'}}>Right on campus.</span>
+      <section className="hero section hero-v2">
+        <div className="hero-blob hero-blob-a"/>
+        <div className="hero-blob hero-blob-b"/>
+        <div className="container grid lg:grid-cols-[1.08fr,0.92fr] gap-16 items-center" style={{position:'relative',zIndex:1}}>
+          <div>
+          <span className="eyebrow"><GraduationCap className="w-3.5 h-3.5" strokeWidth={2.5}/> By students, for students</span>
+          <h1 className="hero-headline">
+            Buy. Sell. Rent.<br/><span className="hero-headline-accent">Right on campus.</span>
           </h1>
-          <p style={{fontSize:'1.15rem',color:'var(--text-soft)',maxWidth:'46ch',marginBottom:32}}>
+          <p className="hero-sub">
             Find textbooks, cycles, gadgets and dorm essentials from fellow students — or make some cash clearing out your room.
           </p>
-          <div style={{display:'flex',gap:10,maxWidth:560,marginBottom:24}}>
+
+          <div className="hero-search-row">
             <div className="nav-search" style={{flex:1,maxWidth:'none',margin:0}}>
               <form onSubmit={(e)=>{e.preventDefault();navigate(`/marketplace?q=${encodeURIComponent(q)}`)}}>
-                <Ico n="search" style={{position:'absolute',left:16,top:'50%',transform:'translateY(-50%)',width:20,height:20,stroke:'var(--ink-soft)'}}/>
-                <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search textbooks, cycles, gadgets…" style={{height:58,paddingLeft:50,fontSize:'1rem',boxShadow:'var(--sh-1) var(--shadow-col)'}}/>
+                <Ico n="search" style={{position:'absolute',left:18,top:'50%',transform:'translateY(-50%)',width:20,height:20,stroke:'var(--ink-soft)'}}/>
+                <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search textbooks, cycles, gadgets…" style={{height:60,paddingLeft:52,fontSize:'1rem'}}/>
               </form>
             </div>
-            <button className="btn btn-primary" onClick={()=>navigate(`/marketplace?q=${encodeURIComponent(q)}`)}>Search</button>
+            <button className="btn btn-primary hero-search-btn" onClick={()=>navigate(`/marketplace?q=${encodeURIComponent(q)}`)}>
+              <Ico n="search" c="w-5 h-5"/> Search
+            </button>
           </div>
 
           {/* Buy · Sell · Rent action buttons */}
-          <div style={{display:'flex',flexWrap:'wrap',gap:14,marginBottom:28}}>
-            <button
-              onClick={()=>navigate('/marketplace?type=sell')}
-              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='6px 6px 0 var(--ink)';}}
-              onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.boxShadow='4px 4px 0 var(--ink)';}}
-              style={{display:'flex',alignItems:'center',gap:10,padding:'13px 28px',borderRadius:50,background:'var(--violet)',color:'#fff',fontFamily:'var(--font-display)',fontWeight:700,fontSize:'1rem',border:'2.5px solid var(--ink)',boxShadow:'4px 4px 0 var(--ink)',cursor:'pointer',transition:'transform .15s,box-shadow .15s'}}>
-              <span style={{fontSize:'1.3rem'}}>🛒</span> Buy
+          <div className="hero-actions">
+            <button onClick={()=>navigate('/marketplace?type=sell')} className="hero-cta hero-cta-buy">
+              <ShoppingCart className="w-5 h-5" strokeWidth={2.25}/> Buy
             </button>
-            <button
-              onClick={()=>navigate('/create')}
-              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='6px 6px 0 var(--ink)';}}
-              onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.boxShadow='4px 4px 0 var(--ink)';}}
-              style={{display:'flex',alignItems:'center',gap:10,padding:'13px 28px',borderRadius:50,background:'var(--yellow)',color:'var(--ink)',fontFamily:'var(--font-display)',fontWeight:700,fontSize:'1rem',border:'2.5px solid var(--ink)',boxShadow:'4px 4px 0 var(--ink)',cursor:'pointer',transition:'transform .15s,box-shadow .15s'}}>
-              <span style={{fontSize:'1.3rem'}}>🏷️</span> Sell
+            <button onClick={()=>navigate('/create')} className="hero-cta hero-cta-sell">
+              <Tag className="w-5 h-5" strokeWidth={2.25}/> Sell
             </button>
-            <button
-              onClick={()=>navigate('/marketplace?type=rent')}
-              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='6px 6px 0 var(--ink)';}}
-              onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.boxShadow='4px 4px 0 var(--ink)';}}
-              style={{display:'flex',alignItems:'center',gap:10,padding:'13px 28px',borderRadius:50,background:'#00C2A8',color:'#fff',fontFamily:'var(--font-display)',fontWeight:700,fontSize:'1rem',border:'2.5px solid var(--ink)',boxShadow:'4px 4px 0 var(--ink)',cursor:'pointer',transition:'transform .15s,box-shadow .15s'}}>
-              <span style={{fontSize:'1.3rem'}}>🔑</span> Rent
+            <button onClick={()=>navigate('/marketplace?type=rent')} className="hero-cta hero-cta-rent">
+              <Key className="w-5 h-5" strokeWidth={2.25}/> Rent
             </button>
           </div>
 
-          <div style={{display:'flex',flexWrap:'wrap',gap:10}}>
-            {CATS.map(c=>(
+          <div className="hero-chips">
+            {CATS.slice(0,7).map(c=>(
               <button key={c.name} className="chip" onClick={()=>navigate(`/marketplace?category=${c.name}`)}>
                 {c.emoji} {c.name}
               </button>
             ))}
+          </div>
+          </div>
+
+          <div className="hero-visual hidden lg:block">
+            <div className="hero-visual-glow"/>
+            <div className="hero-illo-wrap">
+              <HeroIllustration className="hero-illo-main"/>
+              <span className="hero-float-badge hero-float-badge-a"><ShieldCheck className="w-4 h-4" strokeWidth={2.5}/> Verified sellers</span>
+              <span className="hero-float-badge hero-float-badge-b"><Sparkles className="w-4 h-4" strokeWidth={2.5}/> 10k+ students</span>
+            </div>
           </div>
         </div>
       </section>
@@ -112,11 +117,11 @@ function Landing() {
             </div>
           </div>
           <div className="cat-grid">
-            {CATS.map(c=>(
-              <div key={c.name} className="cat-tile" onClick={()=>navigate(`/marketplace?category=${c.name}`)}>
+            {CATS.map((c,i)=>(
+              <Reveal key={c.name} delay={i*40} className="cat-tile" onClick={()=>navigate(`/marketplace?category=${c.name}`)}>
                 <div className="ico" style={{background:c.color}}>{c.emoji}</div>
                 <span style={{fontWeight:700,fontSize:'.88rem'}}>{c.name}</span>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -127,7 +132,7 @@ function Landing() {
         <div className="container">
           <div className="section-head">
             <div>
-              <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'clamp(1.9rem,4vw,2.6rem)'}}>🔥 Trending Now</h2>
+              <h2 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'clamp(1.9rem,4vw,2.6rem)'}}><Flame className="w-8 h-8" strokeWidth={2.25} style={{color:'var(--coral)'}}/> Trending Now</h2>
               <p style={{color:'var(--text-soft)',marginTop:4}}>Most popular listings this week</p>
             </div>
             <button className="btn btn-sm" onClick={()=>navigate('/marketplace')}>
@@ -135,7 +140,7 @@ function Landing() {
             </button>
           </div>
           <div className="grid-listings">
-            {loading ? Array.from({length:8}).map((_,i)=><CardSkeleton key={i}/>) : featured.map((l,i)=><ListingCard key={l.id} listing={l} index={i}/>)}
+            {loading ? Array.from({length:8}).map((_,i)=><CardSkeleton key={i}/>) : featured.map((l,i)=><Reveal key={l.id} delay={Math.min(i*40,240)}><ListingCard listing={l} index={i}/></Reveal>)}
           </div>
         </div>
       </section>
@@ -145,15 +150,15 @@ function Landing() {
         <div className="container">
           <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'clamp(1.9rem,4vw,2.6rem)',marginBottom:40}}>How it works</h2>
           <div className="steps-grid">
-            {[['List in seconds','Snap a photo, set a price, hit publish. Your item is live instantly.','📸'],
-              ['Chat & agree','Message buyers directly, negotiate and arrange a campus meetup.','💬'],
-              ['Meet & trade','Hand over the item, get paid. Leave a review and build your rep.','🤝']
-            ].map(([t,d,e],i)=>(
-              <div key={i}>
+            {[['List in seconds','Snap a photo, set a price, hit publish. Your item is live instantly.',Camera],
+              ['Chat & agree','Message buyers directly, negotiate and arrange a campus meetup.',MessageCircle],
+              ['Meet & trade','Hand over the item, get paid. Leave a review and build your rep.',Handshake]
+            ].map(([t,d,Icon],i)=>(
+              <Reveal key={i} delay={i*100}>
                 <div className="step-num">{i+1}</div>
-                <h3 style={{fontFamily:'var(--font-display)',fontSize:'1.25rem',fontWeight:700,marginBottom:10}}>{e} {t}</h3>
+                <h3 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontSize:'1.25rem',fontWeight:700,marginBottom:10}}><Icon className="w-5 h-5" strokeWidth={2.25}/> {t}</h3>
                 <p style={{color:'rgba(255,246,233,.7)'}}>{d}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -162,14 +167,14 @@ function Landing() {
       {/* Testimonials */}
       <section className="section">
         <div className="container">
-          <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'clamp(1.9rem,4vw,2.6rem)',marginBottom:36}}>Loved by students ❤️</h2>
+          <h2 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'clamp(1.9rem,4vw,2.6rem)',marginBottom:36}}>Loved by students <Heart className="w-8 h-8" strokeWidth={2.25} style={{fill:'var(--coral)',stroke:'var(--ink)'}}/></h2>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:20}}>
             {[
               ['Got my entire sem\'s textbooks for under ₹1000. Total lifesaver!','Ananya R.','1st Year, CSE'],
               ['Sold my old cycle in 2 hours. Way easier than notice boards!','Karan V.','Final Year, ME'],
               ['Rented a mini fridge for the semester. Super smooth process.','Meera J.','2nd Year, ECE'],
             ].map(([q,n,yr],i)=>(
-              <div key={i} className="card testimonial-card">
+              <Reveal key={i} delay={i*80} className="card testimonial-card">
                 <div className="stars">
                   {[0,1,2,3,4].map(s=><Ico key={s} n="star" c="w-4 h-4" style={{fill:'var(--yellow)',stroke:'var(--ink)',strokeWidth:1.5}}/>)}
                 </div>
@@ -178,7 +183,7 @@ function Landing() {
                   <span style={{fontWeight:700}}>{n}</span>
                   <span style={{color:'var(--text-soft)'}}> · {yr}</span>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -203,15 +208,23 @@ function Landing() {
       {/* CTA */}
       <section className="section" style={{paddingTop:0}}>
         <div className="container">
-          <div className="cta-band">
-            <div className="blob" style={{width:200,height:200,top:-60,left:-60,opacity:.5}}/>
-            <div className="blob" style={{width:140,height:140,bottom:-40,right:60,opacity:.3}}/>
-            <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'clamp(2rem,5vw,3.2rem)',position:'relative'}}>Got stuff to sell?</h2>
-            <p style={{marginTop:12,color:'rgba(255,255,255,.8)',maxWidth:'36ch',margin:'12px auto 0',position:'relative'}}>List your first item in under a minute and reach thousands of students.</p>
-            <button className="btn btn-yellow" style={{marginTop:28,position:'relative'}} onClick={()=>navigate('/create')}>
-              Start selling <Ico n="arrow" c="w-4 h-4"/>
-            </button>
-          </div>
+          <Reveal className="cta-band">
+            <div className="cta-band-texture"/>
+            <div className="blob" style={{width:220,height:220,top:-70,left:-70,opacity:.35}}/>
+            <div className="blob" style={{width:160,height:160,bottom:-50,right:40,opacity:.25}}/>
+            <div className="cta-band-inner">
+              <div className="cta-band-copy">
+                <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'clamp(2rem,4.2vw,3rem)',lineHeight:1.05}}>Got stuff to sell?</h2>
+                <p style={{marginTop:14,color:'rgba(255,255,255,.75)',maxWidth:'34ch'}}>List your first item in under a minute and reach thousands of students.</p>
+                <button className="btn btn-premium-gold" style={{marginTop:28}} onClick={()=>navigate('/create')}>
+                  Start selling <Ico n="arrow" c="w-4 h-4"/>
+                </button>
+              </div>
+              <div className="cta-band-photo">
+                <img src={heroPhoto} alt="Preview of the CampusKart marketplace — buy, sell and rent on campus" loading="lazy"/>
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -219,8 +232,8 @@ function Landing() {
       <footer className="site-footer">
         <div className="container footer-inner">
           <div className="logo"><div className="mark">C</div> CampusKart</div>
-          <p style={{fontSize:'.85rem',color:'var(--text-soft)'}}>© 2026 CampusKart · Built for students 🎓</p>
-          <div style={{display:'flex',gap:16}}>
+          <p className="flex items-center gap-1.5" style={{fontSize:'.85rem',color:'var(--text-soft)'}}>© 2026 CampusKart · Built for students <GraduationCap className="w-4 h-4" strokeWidth={2.25}/></p>
+          <div className="flex gap-4">
             <button className="btn btn-ghost btn-sm" onClick={()=>navigate('/marketplace')}>Browse</button>
             <button className="btn btn-ghost btn-sm" onClick={()=>navigate('/login')}>Sign in</button>
           </div>

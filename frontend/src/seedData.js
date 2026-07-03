@@ -1,4 +1,3 @@
-/* ── Seed data ────────────────────────────────────────────────────────── */
 export const DEMO_SELLER = { user_id:'u0', name:'Demo Seller', email:'demo@campus.edu', college:'IIT Campus', rating:4.8, review_count:23, picture:'' };
 export const SEED_LISTINGS = [
   { id:'l1', title:'Engineering Mathematics Vol. 3', price:280, type:'sell', category:'Books', condition:'Good', location:'Hostel A', images:['https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80'], views:142, created_at:Date.now()-86400000*3, owner:DEMO_SELLER, tags:['maths','engineering'], description:'Slightly used copy, all chapters intact. Notes in margins help with exam prep!' },

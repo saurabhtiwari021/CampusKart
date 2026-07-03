@@ -1,5 +1,5 @@
-/* ── Listing Detail ───────────────────────────────────────────────────── */
 import { useState } from 'react';
+import { Frown, Crown, Star, CheckCircle2 } from 'lucide-react';
 import { useApp } from './AppContext';
 import Navbar from './NavBar';
 import { Ico } from './icons';
@@ -29,7 +29,7 @@ function ListingDetail({ id }) {
   const toggleSave = () => {
     if (!user) { navigate('/login'); return; }
     toggleWishlist(id);
-    toast[saved?'info':'success'](saved?'Removed from wishlist':'❤️ Saved to wishlist!');
+    toast[saved?'info':'success'](saved?'Removed from wishlist':'Saved to wishlist!');
   };
 
   const share = () => { navigator.clipboard?.writeText(window.location.href); toast.success('Link copied to clipboard!'); };
@@ -39,8 +39,6 @@ function ListingDetail({ id }) {
     if (!trimmed) return;
     setSending(true);
     try {
-      // Idempotent on the backend — re-opening this modal for the same seller
-      // just returns the existing chat instead of creating a duplicate.
       const { data } = await api.chats.create(listing.id, listing.owner?.user_id);
       const chatId = data.chat.id;
       if (!socket) throw new Error('Still connecting — try again in a moment.');
@@ -59,8 +57,8 @@ function ListingDetail({ id }) {
 
   if (!listing) return (
     <div style={{minHeight:'100vh'}}><Navbar/>
-      <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'70vh',flexDirection:'column',gap:16}}>
-        <div style={{fontSize:64}}>😕</div>
+      <div className="flex items-center justify-center flex-col gap-4" style={{minHeight:'70vh'}}>
+        <Frown className="w-16 h-16" strokeWidth={1.5} style={{color:'var(--text-soft)'}}/>
         <h2 style={{fontFamily:'var(--font-display)',fontWeight:800}}>Listing not found</h2>
         <button className="btn btn-primary" onClick={()=>navigate('/marketplace')}>Browse Marketplace</button>
       </div>
@@ -68,8 +66,6 @@ function ListingDetail({ id }) {
   );
 
   const isOwner = user && listing.owner?.user_id === user.user_id;
-  // Matches the backend's gating rule exactly (no Order model yet, so this is
-  // the proxy: listing must be sold/rented, and you can't review your own listing).
   const canReview = user && !isOwner && ['sold','rented'].includes(listing.status);
 
   return (
@@ -129,8 +125,8 @@ function ListingDetail({ id }) {
             </div>
 
             {isOwner && (
-              <div style={{background:'#F5EFFF',border:'2px solid var(--violet)',borderRadius:18,padding:14,marginTop:16,fontSize:'.88rem',fontWeight:600}}>
-                👑 This is your listing
+              <div className="flex items-center gap-2" style={{background:'#F5EFFF',border:'2px solid var(--violet)',borderRadius:18,padding:14,marginTop:16,fontSize:'.88rem',fontWeight:600}}>
+                <Crown className="w-4 h-4" strokeWidth={2.25} style={{color:'var(--violet)'}}/> This is your listing
               </div>
             )}
 
@@ -159,8 +155,8 @@ function ListingDetail({ id }) {
                     {listing.owner.name}
                     <Ico n="shield" c="w-4 h-4" style={{stroke:'#3b82f6'}}/>
                   </div>
-                  <div style={{fontSize:'.82rem',color:'var(--text-soft)',marginTop:2}}>
-                    {listing.owner.rating>0?`⭐ ${listing.owner.rating} · ${listing.owner.review_count} reviews · `:''}{listing.owner.college}
+                  <div className="flex items-center gap-1 flex-wrap" style={{fontSize:'.82rem',color:'var(--text-soft)',marginTop:2}}>
+                    {listing.owner.rating>0 && <><Star className="w-3.5 h-3.5" style={{fill:'var(--yellow)',stroke:'var(--ink)'}}/> {listing.owner.rating} · {listing.owner.review_count} reviews ·</>} {listing.owner.college}
                   </div>
                 </div>
               </div>
@@ -169,8 +165,8 @@ function ListingDetail({ id }) {
             {/* Leave a review — only once the listing is sold/rented and you're not the owner */}
             {canReview && (
               reviewSubmitted ? (
-                <div style={{background:'#EAF9F0',border:'2px solid var(--teal)',borderRadius:18,padding:14,marginTop:16,fontSize:'.88rem',fontWeight:600}}>
-                  ✅ Thanks for your review!
+                <div className="flex items-center gap-2" style={{background:'#EAF9F0',border:'2px solid var(--teal)',borderRadius:18,padding:14,marginTop:16,fontSize:'.88rem',fontWeight:600}}>
+                  <CheckCircle2 className="w-4 h-4" strokeWidth={2.25} style={{color:'var(--teal)'}}/> Thanks for your review!
                 </div>
               ) : (
                 <div style={{marginTop:20}}>
