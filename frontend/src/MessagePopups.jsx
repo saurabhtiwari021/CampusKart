@@ -5,13 +5,6 @@ import Avatar from './Avatar';
 
 const VISIBLE_MS = 8000;
 
-/**
- * One pop-up. Owns its own auto-dismiss timer, driven by requestAnimationFrame so that:
- *  - it only counts down while the tab is actually visible (rAF pauses in background tabs),
- *  - hovering or focusing it pauses the countdown, so you can read and click at your pace,
- *  - a follow-up message from the same person restarts it (`stamp` changes).
- * The thin bar along the bottom is the time left.
- */
 function Popup({ popup, onDismiss, onOpen }) {
   const barRef = useRef(null);
   const paused = useRef(false);

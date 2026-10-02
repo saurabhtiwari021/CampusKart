@@ -8,6 +8,7 @@ import { ReviewList } from './Reviews';
 import { api } from './api';
 import { DEMO_SELLER } from './seedData';
 import { ReportModal } from './ReportModal';
+import { Reveal } from './Reveal';
 
 function Profile({ uid: profileId }) {
   const { listings, user, navigate, toast } = useApp();
@@ -39,7 +40,7 @@ function Profile({ uid: profileId }) {
         <div className="profile-head">
           <div className="avatar" style={{width:110,height:110,fontSize:'2rem',border:'5px solid var(--paper)',boxShadow:'0 14px 34px rgba(35,26,22,.14)'}}>{profileUser.name?.[0]?.toUpperCase()}</div>
           <div style={{marginBottom:12}}>
-            <h1 style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.6rem',display:'flex',alignItems:'center',gap:10}}>
+            <h1 style={{fontFamily:'var(--font-display)',fontWeight:600,fontSize:'1.8rem',display:'flex',alignItems:'center',gap:10}}>
               {profileUser.name} <Ico n="shield" c="w-5 h-5" style={{stroke:'var(--sage-deep)'}}/>
             </h1>
             <p className="flex items-center gap-1 flex-wrap" style={{color:'var(--text-soft)',fontSize:'.9rem'}}>{profileUser.college} · <Star className="w-3.5 h-3.5" style={{fill:'var(--ochre)',stroke:'var(--ochre)'}}/> {profileUser.rating||'New'} · {profileUser.review_count} reviews</p>
@@ -56,12 +57,12 @@ function Profile({ uid: profileId }) {
           )}
         </div>
 
-        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12,marginTop:24,maxWidth:480}}>
-          {[[Package,profileListings.length,'Listings'],[Star,profileUser.rating||0,'Rating'],[MessageCircle,profileUser.review_count,'Reviews']].map(([Icon,v,l])=>(
-            <div key={l} className="card" style={{textAlign:'center',padding:'16px 10px'}}>
-              <div style={{fontSize:'1.6rem',fontWeight:500,fontFamily:'var(--font-display)'}}>{v}</div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16,marginTop:28,maxWidth:520}}>
+          {[[Package,profileListings.length,'Listings'],[Star,profileUser.rating||0,'Rating'],[MessageCircle,profileUser.review_count,'Reviews']].map(([Icon,v,l],i)=>(
+            <Reveal key={l} delay={i*100} scale className="card" style={{textAlign:'center',padding:'20px 14px'}}>
+              <div style={{fontSize:'2rem',fontWeight:600,fontFamily:'var(--font-display)',color:'var(--jade)'}}>{v}</div>
               <div className="flex items-center justify-center gap-1" style={{fontSize:'.78rem',color:'var(--text-soft)',fontWeight:600,marginTop:2}}><Icon className="w-3.5 h-3.5" strokeWidth={2}/> {l}</div>
-            </div>
+            </Reveal>
           ))}
         </div>
 
@@ -89,10 +90,10 @@ function Profile({ uid: profileId }) {
         )}
         {tab==='achievements' && (
           <div style={{display:'flex',flexWrap:'wrap',gap:12,marginTop:16}}>
-            {[[Trophy,'First Sale'],[BookOpen,'Book Dealer'],[Star,'Top Rated'],[Rocket,'Early Adopter']].map(([Icon,a])=>(
-              <div key={a} className="flex items-center gap-2" style={{padding:'10px 18px',borderRadius:999,border:'1px solid var(--hairline-strong)',background:'var(--tint)',fontWeight:700,fontSize:'.88rem',boxShadow:'none'}}>
+            {[[Trophy,'First Sale'],[BookOpen,'Book Dealer'],[Star,'Top Rated'],[Rocket,'Early Adopter']].map(([Icon,a],i)=>(
+              <Reveal key={a} delay={i*80} scale as="div" className="flex items-center gap-2" style={{padding:'12px 22px',borderRadius:999,border:'1px solid rgba(13,107,78,0.15)',background:'linear-gradient(135deg, rgba(238,243,238,0.8), #fff)',fontWeight:700,fontSize:'.92rem',boxShadow:'0 4px 16px rgba(13,107,78,0.08)',backdropFilter:'blur(8px)'}}>
                 <Icon className="w-4 h-4" strokeWidth={2.25}/> {a}
-              </div>
+              </Reveal>
             ))}
           </div>
         )}

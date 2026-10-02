@@ -10,6 +10,7 @@ import { ReviewForm } from './Reviews';
 import { ListingCard } from './ListingCard';
 import { ReportModal } from './ReportModal';
 import { RentCalendar } from './RentCalendar';
+import { Reveal } from './Reveal';
 
 function ListingDetail({ id }) {
   const { listings, user, wishlist, toggleWishlist, navigate, toast, socket, setOpenChatId } = useApp();
@@ -98,7 +99,7 @@ function ListingDetail({ id }) {
           {/* Info */}
           <div className="detail-info">
             <span className={`stamp ${type.cls}`}>{type.label}</span>
-            <h1 style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'clamp(2rem,3.6vw,3rem)',marginTop:18,lineHeight:1.05}}>{listing.title}</h1>
+            <h1 style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'clamp(2rem,3.6vw,3.2rem)',marginTop:18,lineHeight:1.05}}>{listing.title}</h1>
             <div style={{display:'flex',alignItems:'center',gap:12,marginTop:12,fontSize:'.85rem',color:'var(--text-soft)',flexWrap:'wrap'}}>
               <span style={{display:'flex',alignItems:'center',gap:4}}><Ico n="mappin" c="w-4 h-4"/> {listing.location||'Campus'}</span>
               <span>· {listing.condition}</span>
@@ -106,7 +107,7 @@ function ListingDetail({ id }) {
               <span>· {timeAgo(listing.created_at)}</span>
             </div>
 
-            <div className="detail-price">{inr(listing.price)}</div>
+            <div className="detail-price" style={{background:'linear-gradient(135deg, var(--jade), var(--jade-deep))',WebkitBackgroundClip:'text',color:'transparent'}}>{inr(listing.price)}</div>
             {listing.type==='rent' && (
               <p style={{fontSize:'.9rem',color:'var(--text-soft)',marginTop:-8}}>
                 {listing.rental_duration} {listing.deposit>0 && `· ₹${listing.deposit} deposit`}
@@ -191,10 +192,12 @@ function ListingDetail({ id }) {
 
         {/* Related */}
         {related.length>0 && (
-          <div style={{marginTop:60}}>
-            <h2 style={{fontFamily:'var(--font-display)',fontWeight:300,fontSize:'2rem',marginBottom:32,textAlign:'center'}}>You may also like</h2>
+          <div style={{marginTop:80}}>
+            <Reveal blur>
+              <h2 style={{fontFamily:'var(--font-display)',fontWeight:400,fontSize:'2.2rem',marginBottom:40,textAlign:'center',background:'linear-gradient(135deg, var(--ink), var(--jade))',WebkitBackgroundClip:'text',color:'transparent'}}>You may also like</h2>
+            </Reveal>
             <div className="grid-listings">
-              {related.map((l,i)=><ListingCard key={l.id} listing={l} index={i}/>)}
+              {related.map((l,i)=><Reveal key={l.id} delay={i*80} scale><ListingCard listing={l} index={i}/></Reveal>)}
             </div>
           </div>
         )}

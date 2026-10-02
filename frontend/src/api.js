@@ -1,15 +1,9 @@
-/* ── API client ───────────────────────────────────────────────────────── */
 import { getLS } from './utils';
 
-// Backend base URL. Override via VITE_API_URL in a .env file at the frontend
-// root (Vite only exposes env vars to client code when prefixed VITE_).
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-// Socket.IO connects to the bare server origin, not the /api-prefixed REST
-// base — derive it from API_URL so the two never drift apart. Override with
-// VITE_SOCKET_URL directly if the socket server ever lives elsewhere.
+
 export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || API_URL.replace(/\/api\/?$/, '');
 
-/** Builds a "?a=1&b=2" string, skipping undefined/null/''/'all'/'All' (i.e. "no filter") values. */
 function toQueryString(params = {}) {
   const skip = new Set([undefined, null, '', 'all', 'All']);
   const usp = new URLSearchParams();
@@ -20,12 +14,6 @@ function toQueryString(params = {}) {
   return s ? `?${s}` : '';
 }
 
-/**
- * Low-level fetch wrapper: attaches JWT (if present), parses JSON, throws on !ok.
- * `body` may be a plain object (sent as JSON) or a FormData instance (sent as
- * multipart — used for listing image uploads), in which case we must NOT set
- * our own Content-Type so the browser can add the multipart boundary.
- */
 async function apiFetch(path, { method = 'GET', body, token } = {}) {
   const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
   const headers = isFormData ? {} : { 'Content-Type': 'application/json' };

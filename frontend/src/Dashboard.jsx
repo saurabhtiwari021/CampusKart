@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Reveal } from './Reveal';
 import { Lock, Package, HeartCrack, Bell, ShoppingCart, Star } from 'lucide-react';
 import { useApp } from './AppContext';
 import Navbar from './NavBar';
@@ -77,7 +78,7 @@ function Dashboard({ section='home' }) {
             {/* HOME */}
             {activeSection==='home' && (
               <div>
-                <h1 style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.8rem',marginBottom:6}}>Good day, {user.name?.split(' ')[0]}!</h1>
+                <h1 style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'2.2rem',marginBottom:6,background:'linear-gradient(135deg, var(--ink), var(--jade-deep))',WebkitBackgroundClip:'text',color:'transparent'}}>Good day, {user.name?.split(' ')[0]}!</h1>
                 <p style={{color:'var(--text-soft)',marginBottom:24}}>Here's what's happening with your listings.</p>
                 <div className="dash-cards">
                   {[
@@ -86,17 +87,17 @@ function Dashboard({ section='home' }) {
                     { num:myWishlist.length, lbl:'Saved Items' },
                     { num:myListings.reduce((s,l)=>s+l.views,0), lbl:'Total Views' },
                   ].map((s,i)=>(
-                    <div key={i} className="card dash-stat" >
+                    <Reveal key={i} delay={i*80} scale className="card dash-stat">
                       <div className="num"><CountUp to={s.num} format={s.fmt}/></div>
                       <div className="lbl">{s.lbl}</div>
-                    </div>
+                    </Reveal>
                   ))}
                 </div>
                 {myListings.length>0 ? (
                   <div>
                     <h2 style={{fontFamily:'var(--font-display)',fontWeight:700,fontSize:'1.2rem',marginBottom:16}}>Your Recent Listings</h2>
                     {myListings.slice(0,3).map(l=>(
-                      <div key={l.id} className="table-row">
+                      <Reveal key={l.id} delay={100} className="table-row">
                         <img src={l.images?.[0]||'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=200&q=80'} alt={l.title}/>
                         <div className="grow">
                           <div className="ttl">{l.title}</div>
@@ -106,7 +107,7 @@ function Dashboard({ section='home' }) {
                           <button className="btn btn-sm" onClick={()=>navigate(`/listing/${l.id}`)}>View</button>
                           <button className="btn btn-sm btn-coral" onClick={()=>{deleteListing(l.id).then(()=>toast.success('Listing deleted')).catch(err=>toast.error(err.message||'Could not delete listing'));}}>Delete</button>
                         </div>
-                      </div>
+                      </Reveal>
                     ))}
                   </div>
                 ) : (
@@ -124,7 +125,7 @@ function Dashboard({ section='home' }) {
             {activeSection==='listings' && (
               <div>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
-                  <h2 style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.6rem'}}>My Listings ({myListings.length})</h2>
+                  <h2 style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.8rem',background:'linear-gradient(135deg, var(--ink), var(--jade))',WebkitBackgroundClip:'text',color:'transparent'}}>My Listings ({myListings.length})</h2>
                   <button className="btn btn-primary btn-sm" onClick={()=>navigate('/create')}><Ico n="plus" c="w-4 h-4"/> New Listing</button>
                 </div>
                 {myListings.length===0 ? (
@@ -149,7 +150,7 @@ function Dashboard({ section='home' }) {
             {/* WISHLIST */}
             {activeSection==='wishlist' && (
               <div>
-                <h2 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.6rem',marginBottom:24}}><Ico n="heart" c="w-6 h-6"/> Saved Items</h2>
+                <h2 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.8rem',marginBottom:24,background:'linear-gradient(135deg, var(--ink), var(--jade))',WebkitBackgroundClip:'text',color:'transparent'}}><Ico n="heart" c="w-6 h-6"/> Saved Items</h2>
                 {myWishlist.length===0 ? (
                   <div className="empty-state"><div className="icon-wrap"><HeartCrack className="w-11 h-11" strokeWidth={1.75}/></div><h3>Nothing saved yet</h3><button className="btn btn-primary" onClick={()=>navigate('/marketplace')}>Browse Marketplace</button></div>
                 ) : (
@@ -165,7 +166,7 @@ function Dashboard({ section='home' }) {
             {activeSection==='notifications' && (
               <div>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
-                  <h2 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.6rem'}}><Bell className="w-6 h-6" strokeWidth={2}/> Notifications</h2>
+                  <h2 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.8rem',background:'linear-gradient(135deg, var(--ink), var(--jade))',WebkitBackgroundClip:'text',color:'transparent'}}><Bell className="w-6 h-6" strokeWidth={2}/> Notifications</h2>
                   {notifications.some(n=>!n.read) && (
                     <button className="btn btn-sm" onClick={markAllNotifsRead}>Mark all read</button>
                   )}
@@ -187,7 +188,7 @@ function Dashboard({ section='home' }) {
             {/* ORDERS */}
             {activeSection==='orders' && (
               <div>
-                <h2 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.6rem',marginBottom:24}}><Package className="w-6 h-6" strokeWidth={2}/> Orders</h2>
+                <h2 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.8rem',marginBottom:24,background:'linear-gradient(135deg, var(--ink), var(--jade))',WebkitBackgroundClip:'text',color:'transparent'}}><Package className="w-6 h-6" strokeWidth={2}/> Orders</h2>
                 <div className="empty-state"><div className="icon-wrap"><ShoppingCart className="w-11 h-11" strokeWidth={1.75}/></div><h3>No orders yet</h3><p style={{color:'var(--text-soft)',marginBottom:20}}>When you buy or sell items, orders will appear here.</p><button className="btn btn-primary" onClick={()=>navigate('/marketplace')}>Browse Marketplace</button></div>
               </div>
             )}
@@ -195,7 +196,7 @@ function Dashboard({ section='home' }) {
             {/* REVIEWS */}
             {activeSection==='reviews' && (
               <div>
-                <h2 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.6rem',marginBottom:24}}><Star className="w-6 h-6" strokeWidth={2}/> Reviews</h2>
+                <h2 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.8rem',marginBottom:24,background:'linear-gradient(135deg, var(--ink), var(--jade))',WebkitBackgroundClip:'text',color:'transparent'}}><Star className="w-6 h-6" strokeWidth={2}/> Reviews</h2>
                 {reviewsLoading ? (
                   <div className="flex justify-center p-10"><Ico n="loader" c="w-6 h-6 spin"/></div>
                 ) : myReviews.length===0 ? (
@@ -209,7 +210,7 @@ function Dashboard({ section='home' }) {
             {/* SETTINGS */}
             {activeSection==='settings' && (
               <div>
-                <h2 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.6rem',marginBottom:24}}><Ico n="settings" c="w-6 h-6"/> Settings</h2>
+                <h2 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.8rem',marginBottom:24,background:'linear-gradient(135deg, var(--ink), var(--jade))',WebkitBackgroundClip:'text',color:'transparent'}}><Ico n="settings" c="w-6 h-6"/> Settings</h2>
                 <div className="settings-grid">
                   <div className="card" style={{padding:20}}>
                     <h3 style={{fontFamily:'var(--font-display)',fontWeight:700,marginBottom:16}}>Profile Info</h3>

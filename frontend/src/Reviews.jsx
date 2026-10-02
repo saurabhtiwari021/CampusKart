@@ -50,7 +50,6 @@ function ReviewCard({ review }) {
   );
 }
 
-/** Plain list of ReviewCards, newest first (the backend already sorts this way). */
 export function ReviewList({ reviews }) {
   return <div>{reviews.map(r => <ReviewCard key={r.id} review={r}/>)}</div>;
 }

@@ -1,5 +1,3 @@
-/* A still-life of campus things — books, a wheel, a lamp — set inside nested
-   arches on a cocoa plinth. Each element rises into place once on load. */
 const rise = (i) => ({ animationDelay: `${0.15 + i * 0.14}s` });
 
 export default function HeroIllustration({ className = '' }) {

@@ -7,15 +7,12 @@ import { Ico } from './icons';
 import { ListingCard, CardSkeleton } from './ListingCard';
 import { CATS } from './constants';
 import { Reveal } from './Reveal';
-import { SplitWords, fadeUp, EASE } from './Motion';
+import { SplitWords, fadeUp, EASE, MagneticWrap } from './Motion';
 import HeroIllustration from './HeroIllustration';
 import heroPhoto from './assets/campus-market-preview.jpg';
 
 const CAT_ICON = { Books: BookOpen, Electronics: Laptop, Furniture: Armchair, Cycles: Bike, Clothing: Shirt, Sports: Dumbbell, Stationery: PenLine };
 
-/* The arch still-life leans a few degrees toward the pointer and the two
-   floating labels drift the opposite way: depth in answer to the visitor's
-   own movement, not motion for its own sake. */
 function HeroStage() {
   const reduce = useReducedMotion();
   const px = useMotionValue(0);
@@ -98,6 +95,13 @@ function Landing() {
         </div>
       </section>
 
+      {/* Ambient glow orbs */}
+      <div className="hero-ambient" aria-hidden="true">
+        <div className="orb orb-1"/>
+        <div className="orb orb-2"/>
+        <div className="orb orb-3"/>
+      </div>
+
       {/* Ticker */}
       <div className="marquee-strip" aria-hidden="true">
         <div className="marquee-track">
@@ -120,7 +124,7 @@ function Landing() {
             {CATS.map((c,i)=>{
               const Icon = CAT_ICON[c.name] || BookOpen;
               return (
-                <Reveal key={c.name} delay={i*50} className="cat-tile" onClick={()=>navigate(`/marketplace?category=${c.name}`)}>
+                <Reveal key={c.name} delay={i*70} blur scale className="cat-tile" onClick={()=>navigate(`/marketplace?category=${c.name}`)}>
                   <div className="ico"><Icon className="w-5 h-5" strokeWidth={1.5}/></div>
                   <span className="nm">{c.name}</span>
                 </Reveal>
@@ -141,7 +145,7 @@ function Landing() {
             <button className="link-u" onClick={()=>navigate('/marketplace')}>View all listings</button>
           </div>
           <div className="grid-listings">
-            {loading ? Array.from({length:8}).map((_,i)=><CardSkeleton key={i}/>) : featured.map((l,i)=><Reveal key={l.id} delay={Math.min(i*40,240)}><ListingCard listing={l} index={i}/></Reveal>)}
+            {loading ? Array.from({length:8}).map((_,i)=><CardSkeleton key={i}/>) : featured.map((l,i)=><Reveal key={l.id} delay={Math.min(i*60,360)} scale><ListingCard listing={l} index={i}/></Reveal>)}
           </div>
         </div>
       </section>
@@ -155,7 +159,7 @@ function Landing() {
               ['Chat and agree','Message buyers directly, negotiate and arrange a campus meetup.',MessageCircle],
               ['Meet and trade','Hand over the item, get paid. Leave a review and build your reputation.',Handshake]
             ].map(([t,d],i)=>(
-              <Reveal key={i} delay={i*100} className="step">
+              <Reveal key={i} delay={i*120} blur className="step">
                 <div className="step-num">{i+1}</div>
                 <h3>{t}</h3>
                 <p>{d}</p>
@@ -175,7 +179,7 @@ function Landing() {
               [MessageCircle,'Chat that keeps up','Message sellers in real time, share photos, and see when your message has been read.'],
               [Star,'Reviews from real trades','Only the buyer of a completed sale or rental can leave a review, so ratings reflect real deals.'],
             ].map(([Icon,t,d],i)=>(
-              <Reveal key={i} delay={i*100} className="pillar">
+              <Reveal key={i} delay={i*120} blur scale className="pillar">
                 <div className="ico"><Icon className="w-5 h-5" strokeWidth={1.5}/></div>
                 <h3>{t}</h3>
                 <p>{d}</p>
@@ -208,12 +212,12 @@ function Landing() {
       {/* CTA */}
       <section className="section" style={{paddingTop:0}}>
         <div className="container">
-          <Reveal className="cta-band">
+          <Reveal className="cta-band" scale>
             <div className="cta-band-inner">
               <div className="cta-band-copy">
                 <h2>Got stuff to sell?</h2>
                 <p>List your first item in under a minute and reach thousands of students.</p>
-                <button className="btn btn-premium-gold" style={{marginTop:32}} onClick={()=>navigate('/create')}>Start selling</button>
+                <MagneticWrap><button className="btn btn-premium-gold" style={{marginTop:32}} onClick={()=>navigate('/create')}>Start selling</button></MagneticWrap>
               </div>
               <div className="cta-band-photo">
                 <img src={heroPhoto} alt="Preview of the CampusKart marketplace — buy, sell and rent on campus" loading="lazy"/>
@@ -224,6 +228,7 @@ function Landing() {
       </section>
 
       {/* Footer */}
+      <div className="footer-gradient-line" aria-hidden="true"/>
       <footer className="site-footer">
         <div className="container footer-inner">
           <div>

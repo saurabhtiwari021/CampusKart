@@ -16,7 +16,6 @@ const QUICK_REPLIES = [
   'Could you share more photos?',
 ];
 
-/* ── helpers ────────────────────────────────────────────────────────────── */
 const dayKey = (ts) => new Date(ts).toDateString();
 
 function dayLabel(ts) {

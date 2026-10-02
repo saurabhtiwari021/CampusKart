@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-/** Profile photo when there is one (e.g. from Google sign-in), otherwise the first initial. */
 export default function Avatar({ user, size = 42, className = '', style }) {
   const [broken, setBroken] = useState(false);
   const name = user?.name || '?';

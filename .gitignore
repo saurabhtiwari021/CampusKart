@@ -1,8 +1,6 @@
-# dependencies & build output
 node_modules/
 dist/
 
-# secrets — never commit real credentials
 .env
 .env.*
 !.env.example

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useApp } from './AppContext';
 import { Ico } from './icons';
 import { TYPE_META, CONDITION_META } from './constants';
@@ -22,8 +22,22 @@ export function ListingCard({ listing, index=0 }) {
     toast[saved?'info':'success'](saved ? 'Removed from wishlist' : 'Saved to wishlist!');
   };
 
+  const cardRef = useRef(null);
+  const handleMouseMove = (e) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    el.style.transform = `perspective(800px) rotateY(${x * 4}deg) rotateX(${-y * 4}deg)`;
+  };
+  const handleMouseLeave = () => {
+    const el = cardRef.current;
+    if (el) el.style.transform = 'perspective(800px) rotateY(0) rotateX(0)';
+  };
+
   return (
-    <div className="listing-card" style={{animationDelay:`${Math.min(index*.04,.4)}s`}}>
+    <div ref={cardRef} className="listing-card" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} style={{animationDelay:`${Math.min(index*.04,.4)}s`,transition:'transform 0.4s cubic-bezier(.22,1,.36,1)'}}>
       <a href={`#/listing/${listing.id}`} onClick={(e)=>{e.preventDefault();navigate(`/listing/${listing.id}`);}}>
         <div className="thumb-wrap">
           <img src={listing.images?.[0] || 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&q=80'} alt={listing.title} loading="lazy"/>

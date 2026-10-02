@@ -4,6 +4,7 @@ import { useApp } from './AppContext';
 import Navbar from './NavBar';
 import { Ico } from './icons';
 import { CATS, CONDITIONS } from './constants';
+import { Reveal } from './Reveal';
 
 function CreateListing() {
   const { user, addListing, navigate, toast } = useApp();
@@ -78,11 +79,11 @@ function CreateListing() {
           <Ico n="chevleft" c="w-4 h-4"/> Back
         </button>
         <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:32}}>
-          <div style={{width:48,height:48,borderRadius:14,background:'var(--violet)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'none'}}>
+          <div style={{width:52,height:52,borderRadius:16,background:'linear-gradient(135deg, var(--jade), var(--jade-deep))',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 10px 24px rgba(13,107,78,0.25)'}}>
             <Ico n="plus" c="w-6 h-6" style={{stroke:'var(--paper)'}}/>
           </div>
           <div>
-            <h1 style={{fontFamily:'var(--font-display)',fontSize:'2.4rem',fontWeight:300}}>Create a listing</h1>
+            <h1 style={{fontFamily:'var(--font-display)',fontSize:'2.6rem',fontWeight:400,background:'linear-gradient(135deg, var(--ink), var(--jade-deep))',WebkitBackgroundClip:'text',color:'transparent'}}>Create a listing</h1>
             <p style={{color:'var(--text-soft)'}}>List your item in under 2 minutes</p>
           </div>
         </div>
@@ -202,7 +203,7 @@ function CreateListing() {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary btn-block" disabled={loading} style={{marginTop:8,fontSize:'1.05rem',padding:'16px'}}>
+          <button type="submit" className="btn btn-primary btn-block" disabled={loading} style={{marginTop:16,fontSize:'1.1rem',padding:'18px 32px',borderRadius:999,boxShadow:'0 12px 28px rgba(13,107,78,0.3)'}}>
             {loading ? <><Ico n="loader" c="w-5 h-5 spin"/> Publishing…</> : <><Rocket className="w-5 h-5" strokeWidth={2.25}/> Publish listing</>}
           </button>
         </form>

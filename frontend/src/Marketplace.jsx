@@ -8,6 +8,7 @@ import { ListingCard, CardSkeleton } from './ListingCard';
 import { CATS, CONDITIONS, TYPES, TYPE_META } from './constants';
 import { inr } from './utils';
 import { api } from './api';
+import { Reveal } from './Reveal';
 
 function Marketplace() {
   const { navigate, toast } = useApp();
@@ -59,7 +60,7 @@ function Marketplace() {
       <div className="container section" style={{paddingTop:32}}>
         <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',marginBottom:44,flexWrap:'wrap',gap:16}}>
           <div>
-            <h1 style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'clamp(2.4rem,5vw,4rem)',fontWeight:300,lineHeight:1}}>
+            <h1 style={{fontFamily:'var(--font-display)',fontSize:'clamp(2.4rem,5vw,4rem)',fontWeight:400,lineHeight:1,background:'linear-gradient(135deg, var(--ink), var(--jade-deep))',WebkitBackgroundClip:'text',color:'transparent'}}>
               {appliedSearch ? `Results for "${appliedSearch}"` : 'Marketplace'}
             </h1>
             <p style={{color:'var(--text-soft)',marginTop:4}}>{loading ? 'Searching…' : `${results.length} items available`}</p>
@@ -149,7 +150,7 @@ function Marketplace() {
               <div className={view==='grid' ? 'grid-listings' : ''} style={view==='list'?{display:'flex',flexDirection:'column',gap:16}:{}}>
                 {results.map((l,i)=>(
                   view==='list' ? (
-                    <div key={l.id} className="table-row" style={{cursor:'pointer'}} onClick={()=>navigate(`/listing/${l.id}`)}>
+                    <Reveal key={l.id} delay={Math.min(i*50,300)} as="div" className="table-row" style={{cursor:'pointer'}} onClick={()=>navigate(`/listing/${l.id}`)}>
                       <img src={l.images?.[0]||'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=300&q=80'} alt={l.title} className="w-20 h-20 aspect-square object-cover rounded-xl flex-shrink-0" style={{border:'1px solid var(--hairline)'}}/>
                       <div className="grow">
                         <div className="ttl">{l.title}</div>
@@ -157,9 +158,9 @@ function Marketplace() {
                         <span className={`stamp ${TYPE_META[l.type]?.cls} mt-2`} style={{display:'inline-flex',marginTop:8,fontSize:10}}>{TYPE_META[l.type]?.label}</span>
                       </div>
                       <div style={{fontFamily:'var(--font-display)',fontWeight:500,color:'var(--violet-deep)',fontSize:'1.15rem',flexShrink:0}}>{inr(l.price)}</div>
-                    </div>
+                    </Reveal>
                   ) : (
-                    <ListingCard key={l.id} listing={l} index={i}/>
+                    <Reveal key={l.id} delay={Math.min(i*50,300)} scale><ListingCard listing={l} index={i}/></Reveal>
                   )
                 ))}
               </div>

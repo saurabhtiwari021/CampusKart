@@ -9,8 +9,5 @@ export const timeAgo = (ts) => {
   if(s<86400) return `${Math.floor(s/3600)}h ago`;
   return `${Math.floor(s/86400)}d ago`;
 };
-/** "3:45 PM" — used for chat message bubbles, where a relative time is too coarse. */
 export const timeShort = (ts) => new Date(ts).toLocaleTimeString('en-IN', { hour:'numeric', minute:'2-digit' });
-
-/** Normalises "a user reference" — a populated user object ({user_id} or raw {_id}) or a bare id — to a string id. */
 export const idOf = (x) => (x && typeof x === 'object') ? String(x.user_id || x._id || x.id || '') : String(x || '');

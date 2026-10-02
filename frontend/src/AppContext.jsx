@@ -1,4 +1,3 @@
-/* ── AppContext ────────────────────────────────────────────────────────── */
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';

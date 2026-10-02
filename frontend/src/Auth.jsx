@@ -9,7 +9,6 @@ import { EASE } from './Motion';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
-// Google Identity Services is loaded once, on demand, the first time the auth page opens.
 let gsiPromise = null;
 function loadGsi() {
   if (window.google?.accounts?.id) return Promise.resolve();
@@ -139,7 +138,7 @@ function AuthPage({ mode }) {
           CampusKart
         </button>
         <div style={{position:'relative',zIndex:1}}>
-          <h2 style={{fontFamily:'var(--font-display)',fontSize:'clamp(2.6rem,4.4vw,4rem)',fontWeight:300,lineHeight:1,letterSpacing:'-.03em',marginBottom:20}}>Your campus,<br/>one marketplace.</h2>
+          <h2 style={{fontFamily:'var(--font-display)',fontSize:'clamp(2.8rem,4.6vw,4.2rem)',fontWeight:400,lineHeight:1,letterSpacing:'-.03em',marginBottom:24}}>Your campus,<br/>one marketplace.</h2>
           <p style={{color:'rgba(35,26,22,.75)',maxWidth:'34ch',marginBottom:32}}>Buy, sell, rent and exchange with students on your campus. Textbooks, cycles, gadgets and more.</p>
           <div className="flex flex-col gap-3">
             {[[BookOpen,'Textbooks from ₹50'],[Bike,'Rent cycles by the month'],[Laptop,'Verified campus sellers']].map(([Icon,t],i)=>(
@@ -160,7 +159,7 @@ function AuthPage({ mode }) {
           <button className="logo" style={{background:'none',border:'none',cursor:'pointer',marginBottom:24}} onClick={()=>navigate('/')}>
             <div className="mark">C</div>
           </button>
-          <h1 style={{fontFamily:'var(--font-display)',fontSize:'2.8rem',fontWeight:300,letterSpacing:'-.03em',lineHeight:1.05,marginBottom:8}}>
+          <h1 style={{fontFamily:'var(--font-display)',fontSize:'2.8rem',fontWeight:400,letterSpacing:'-.03em',lineHeight:1.05,marginBottom:8,background:'linear-gradient(135deg, var(--ink), var(--jade-deep))',WebkitBackgroundClip:'text',color:'transparent'}}>
             {tab==='login'?'Welcome back':'Create account'}
           </h1>
           <p style={{color:'var(--text-soft)',marginBottom:24,fontSize:'.95rem'}}>

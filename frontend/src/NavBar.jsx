@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useApp } from './AppContext';
 import { Ico } from './icons';
 import Avatar from './Avatar';
-import { ScrollProgress } from './Motion';
+import { ScrollProgress, MagneticWrap } from './Motion';
 
 function Navbar() {
   const { user, logout, navigate, page, mobileMenu, setMobileMenu, unreadCount, totalUnread } = useApp();
@@ -30,10 +30,12 @@ function Navbar() {
     <header className={`navbar glass ${scrolled ? 'scrolled' : ''}`} data-testid="navbar">
       <div className="container navbar-inner">
         {/* Logo */}
-        <a href="#/" className="logo" onClick={(e)=>{e.preventDefault();navigate('/');}}>
-          <div className="mark">C</div>
-          <span className="hidden sm:block">CampusKart</span>
-        </a>
+        <MagneticWrap strength={0.2}>
+          <a href="#/" className="logo" onClick={(e)=>{e.preventDefault();navigate('/');}}>
+            <div className="mark">C</div>
+            <span className="hidden sm:block">CampusKart</span>
+          </a>
+        </MagneticWrap>
 
         {/* Search */}
         <div className="nav-search hidden md:block">
