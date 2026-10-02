@@ -10,7 +10,17 @@ const UserSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    passwordHash: { type: String, required: true, select: false },
+    // Accounts created through Google sign-in have no password, so the hash
+    // is only required when there is no linked Google identity.
+    passwordHash: {
+      type: String,
+      required: function () { return !this.googleId; },
+      select: false,
+    },
+    // Google account id (the `sub` claim). Sparse-unique: many users have none.
+    // select:false keeps it out of populated `sender`/`owner` objects that get
+    // sent to other users — the Google login controller opts in with +googleId.
+    googleId: { type: String, unique: true, sparse: true, select: false },
 
     college: { type: String, default: 'KIIT' },
     department: { type: String, default: '' },
@@ -48,6 +58,7 @@ UserSchema.methods.toJSON = function () {
   delete obj._id;
   delete obj.reviewCount;
   delete obj.passwordHash;
+  delete obj.googleId;
   delete obj.__v;
   return obj;
 };

@@ -95,7 +95,7 @@ function Admin() {
   if (!user) {
     return (<div style={{minHeight:'100vh'}}><Navbar/><div className="flex items-center justify-center flex-col gap-4" style={{minHeight:'70vh'}}>
       <Lock className="w-16 h-16" strokeWidth={1.5} style={{color:'var(--text-soft)'}}/>
-      <h2 style={{fontFamily:'var(--font-display)',fontWeight:800}}>Sign in to access the admin panel</h2>
+      <h2 style={{fontFamily:'var(--font-display)',fontWeight:500}}>Sign in to access the admin panel</h2>
       <button className="btn btn-primary" onClick={()=>navigate('/login')}>Sign in</button>
     </div></div>);
   }
@@ -119,10 +119,10 @@ function Admin() {
               <button key={n.id} className={`dash-link ${section===n.id?'active':''}`} onClick={()=>setSection(n.id)}>
                 <Ico n={n.icon} c="w-5 h-5"/> {n.label}
                 {n.id==='listings' && stats?.flaggedListings>0 && (
-                  <span style={{marginLeft:'auto',minWidth:20,height:20,padding:'0 5px',borderRadius:999,background:'var(--coral)',color:'#fff',fontSize:11,fontWeight:800,display:'flex',alignItems:'center',justifyContent:'center'}}>{stats.flaggedListings}</span>
+                  <span style={{marginLeft:'auto',minWidth:20,height:20,padding:'0 5px',borderRadius:999,background:'var(--coral)',color:'#fff',fontSize:11,fontWeight:500,display:'flex',alignItems:'center',justifyContent:'center'}}>{stats.flaggedListings}</span>
                 )}
                 {n.id==='reports' && stats?.openReports>0 && (
-                  <span style={{marginLeft:'auto',minWidth:20,height:20,padding:'0 5px',borderRadius:999,background:'var(--coral)',color:'#fff',fontSize:11,fontWeight:800,display:'flex',alignItems:'center',justifyContent:'center'}}>{stats.openReports}</span>
+                  <span style={{marginLeft:'auto',minWidth:20,height:20,padding:'0 5px',borderRadius:999,background:'var(--coral)',color:'#fff',fontSize:11,fontWeight:500,display:'flex',alignItems:'center',justifyContent:'center'}}>{stats.openReports}</span>
                 )}
               </button>
             ))}
@@ -133,7 +133,7 @@ function Admin() {
             {/* OVERVIEW */}
             {section==='overview' && (
               <div>
-                <h1 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'1.8rem',marginBottom:6}}><ShieldCheck className="w-7 h-7" strokeWidth={2}/> Admin Overview</h1>
+                <h1 className="flex items-center gap-2" style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.8rem',marginBottom:6}}><ShieldCheck className="w-7 h-7" strokeWidth={2}/> Admin Overview</h1>
                 <p style={{color:'var(--text-soft)',marginBottom:24}}>A quick snapshot of what's happening across CampusKart.</p>
                 {statsLoading || !stats ? (
                   <div className="flex justify-center p-10"><Ico n="loader" c="w-6 h-6 spin"/></div>
@@ -148,9 +148,9 @@ function Admin() {
                       { num:stats.flaggedListings, lbl:'Flagged (Fraud Check)', bg:'var(--coral)', color:'#fff' },
                       { num:stats.openReports, lbl:'Open Reports', bg:'var(--violet)', color:'#fff' },
                     ].map((s,i)=>(
-                      <div key={i} className="card dash-stat" style={{background:s.bg,color:s.color,borderColor:'var(--ink)'}}>
+                      <div key={i} className="card dash-stat" >
                         <div className="num">{s.num}</div>
-                        <div className="lbl" style={{color:s.color==='#fff'?'rgba(255,255,255,.8)':'var(--ink-soft)'}}>{s.lbl}</div>
+                        <div className="lbl">{s.lbl}</div>
                       </div>
                     ))}
                   </div>
@@ -162,7 +162,7 @@ function Admin() {
             {section==='users' && (
               <div>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20,gap:12,flexWrap:'wrap'}}>
-                  <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'1.6rem'}}>Users ({users.length})</h2>
+                  <h2 style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.6rem'}}>Users ({users.length})</h2>
                   <form onSubmit={(e)=>{e.preventDefault();loadUsers(userSearch);}} className="flex gap-2">
                     <input className="input" style={{padding:'9px 14px',width:220}} value={userSearch} onChange={e=>setUserSearch(e.target.value)} placeholder="Search by name or email"/>
                     <button className="btn btn-sm" type="submit">Search</button>
@@ -196,7 +196,7 @@ function Admin() {
             {section==='listings' && (
               <div>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20,gap:12,flexWrap:'wrap'}}>
-                  <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'1.6rem'}}>All Listings ({listings.length})</h2>
+                  <h2 style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.6rem'}}>All Listings ({listings.length})</h2>
                   <label className="flex items-center gap-2" style={{fontWeight:600,fontSize:'.88rem',cursor:'pointer'}}>
                     <input type="checkbox" checked={flaggedOnly} onChange={e=>{const v=e.target.checked;setFlaggedOnly(v);loadListings(v);}} style={{width:18,height:18,accentColor:'var(--coral)'}}/>
                     <Flag className="w-4 h-4" strokeWidth={2}/> Flagged only
@@ -230,7 +230,7 @@ function Admin() {
             {/* REPORTS */}
             {section==='reports' && (
               <div>
-                <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'1.6rem',marginBottom:20}}>Reports ({reports.length})</h2>
+                <h2 style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'1.6rem',marginBottom:20}}>Reports ({reports.length})</h2>
                 {reportsLoading ? (
                   <div className="flex justify-center p-10"><Ico n="loader" c="w-6 h-6 spin"/></div>
                 ) : reports.length===0 ? (

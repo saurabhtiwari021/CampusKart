@@ -188,3 +188,20 @@ Built as a full-stack academic project focused on real-world campus commerce, em
 
 **All Rights Reserved.** This project and its source code are proprietary — no part of it may be copied, modified, deployed, or used commercially without explicit written permission. See [LICENSE](LICENSE) for full terms.
 
+
+---
+
+## 🔐 Google sign-in setup
+
+1. In [Google Cloud Console](https://console.cloud.google.com/) go to **APIs & Services > Credentials > Create credentials > OAuth client ID** and choose **Web application**.
+2. Under **Authorized JavaScript origins** add `http://localhost:5173` (Vite dev) and your deployed URL, e.g. `https://campus-kart-one.vercel.app`. No redirect URI is needed.
+3. Put the client ID in both places:
+   - `backend/.env` → `GOOGLE_CLIENT_ID=...`
+   - `frontend/.env` → `VITE_GOOGLE_CLIENT_ID=...`
+4. Add the dev origin to the backend's `FRONTEND_URL` (e.g. `http://localhost:5173`) so CORS and sockets allow it.
+
+The browser only receives a Google ID token; the backend verifies it, applies the same `@kiit.ac.in` rule as password sign-up, then finds or creates the account and issues the normal CampusKart JWT. An existing password account is linked the first time its owner signs in with Google.
+
+## 💬 New-message pop-ups
+
+When someone messages you and you are not looking at that chat, a card appears top-right with their name, the listing and a preview. Click it to open the chat, or use the ✕ to dismiss it. It closes itself after 8 seconds (paused while you hover), and repeated messages from one person collapse into a single card. Unread counts show on the navbar, the chat list, the dashboard menu and the browser tab title.

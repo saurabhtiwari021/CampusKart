@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useApp } from './AppContext';
 import { Ico } from './icons';
 import { TYPE_META, CONDITION_META } from './constants';
@@ -22,11 +22,26 @@ export function ListingCard({ listing, index=0 }) {
     toast[saved?'info':'success'](saved ? 'Removed from wishlist' : 'Saved to wishlist!');
   };
 
+  const cardRef = useRef(null);
+  const handleMouseMove = (e) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    el.style.transform = `perspective(800px) rotateY(${x * 4}deg) rotateX(${-y * 4}deg)`;
+  };
+  const handleMouseLeave = () => {
+    const el = cardRef.current;
+    if (el) el.style.transform = 'perspective(800px) rotateY(0) rotateX(0)';
+  };
+
   return (
-    <div className="listing-card" style={{animationDelay:`${Math.min(index*.04,.4)}s`}}>
+    <div ref={cardRef} className="listing-card" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} style={{animationDelay:`${Math.min(index*.04,.4)}s`,transition:'transform 0.4s cubic-bezier(.22,1,.36,1)'}}>
       <a href={`#/listing/${listing.id}`} onClick={(e)=>{e.preventDefault();navigate(`/listing/${listing.id}`);}}>
         <div className="thumb-wrap">
           <img src={listing.images?.[0] || 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&q=80'} alt={listing.title} loading="lazy"/>
+          {listing.images?.[1] && <img className="alt" src={listing.images[1]} alt="" loading="lazy" aria-hidden="true"/>}
           <div className="badge-pos">
             <span className={`stamp ${type.cls}`}>{type.label}</span>
           </div>
@@ -43,7 +58,7 @@ export function ListingCard({ listing, index=0 }) {
           <div className="meta">
             <Ico n="mappin" c="w-3 h-3"/>
             <span>{listing.location || 'Campus'}</span>
-            <span>·</span>
+            <span aria-hidden="true">·</span>
             <span>{timeAgo(listing.created_at)}</span>
             <span className="ml-auto flex items-center gap-1"><Ico n="eye" c="w-3 h-3"/> {listing.views}</span>
           </div>
@@ -52,7 +67,7 @@ export function ListingCard({ listing, index=0 }) {
               {owner.picture ? <img src={owner.picture} alt=""/> : (owner.name?.[0]?.toUpperCase() || '?')}
             </span>
             <span className="seller-name">{owner.name || 'Unknown seller'}</span>
-            {verified && <Ico n="shield" c="w-3.5 h-3.5" style={{stroke:'#3b82f6',flexShrink:0}}/>}
+            {verified && <Ico n="shield" c="w-3.5 h-3.5" style={{stroke:'var(--sage-deep)',flexShrink:0}}/>}
             {owner.college && <span className="flex-shrink-0" style={{opacity:.7}}>· {owner.college}</span>}
           </div>
         </div>

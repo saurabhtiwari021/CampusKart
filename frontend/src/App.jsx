@@ -1,5 +1,5 @@
 import { Routes, Route, useParams, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'framer-motion';
 import { AppProvider } from './AppContext';
 import Landing from './Landing';
 import AuthPage from './Auth';
@@ -65,7 +65,7 @@ function App() {
 }
 
 function Root() {
-  return <AppProvider><App/></AppProvider>;
+  return <MotionConfig reducedMotion="user"><AppProvider><App/></AppProvider></MotionConfig>;
 }
 
 export default Root;

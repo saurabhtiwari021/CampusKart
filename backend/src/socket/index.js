@@ -1,6 +1,7 @@
 const { Server } = require('socket.io');
 const Chat = require('../models/Chat');
 const Message = require('../models/Message');
+const Listing = require('../models/Listing');
 const { verifyToken } = require('../middleware/auth');
 // Required lazily inside the connection handler (see below) to avoid a
 // require cycle: notify.js calls getIO() from this same file.
@@ -14,6 +15,38 @@ async function findChatForParticipant(chatId, userId) {
   if (!chat) return null;
   const isParticipant = chat.participants.some((p) => p.toString() === userId.toString());
   return isParticipant ? chat : null;
+}
+
+
+/**
+ * Tells the *other* participant a message just arrived, on their personal
+ * user-id room (which every socket joins on connect). This is separate from
+ * 'new_message', which only reaches sockets that have opened that chat — so
+ * without it, someone browsing the marketplace would never hear about a new
+ * message. The client uses this for pop-ups, unread badges and the tab title.
+ * Never throws: a failed alert must not break sending the message itself.
+ */
+async function notifyIncomingMessage(chat, message, sender) {
+  try {
+    const receiverId = chat.participants.find((p) => p.toString() !== sender._id.toString());
+    if (!receiverId || !io) return;
+    const listing = await Listing.findById(chat.listing).select('title');
+    io.to(receiverId.toString()).emit('message:incoming', {
+      chatId: chat._id.toString(),
+      messageId: message._id.toString(),
+      text: message.image ? '' : (message.text || '').slice(0, 160),
+      hasImage: !!message.image,
+      created_at: message.createdAt ? new Date(message.createdAt).getTime() : Date.now(),
+      sender: {
+        user_id: sender._id.toString(),
+        name: sender.name,
+        picture: sender.picture || '',
+      },
+      listing: listing ? { id: listing._id.toString(), title: listing.title } : null,
+    });
+  } catch (err) {
+    console.warn('[socket] message:incoming failed:', err.message);
+  }
 }
 
 /**
@@ -101,6 +134,7 @@ function initSocket(httpServer, allowedOrigins) {
         // Broadcasts to everyone in the room — both participants, including
         // the sender's own other tabs/devices.
         io.to(chatId).emit('new_message', message);
+        notifyIncomingMessage(chat, message, socket.user);
 
         // Notify the other participant. Required lazily to sidestep a require
         // cycle (notify.js -> getIO() -> this file); by the time a message is
@@ -137,4 +171,4 @@ function getIO() {
   return io;
 }
 
-module.exports = { initSocket, getIO };
+module.exports = { initSocket, getIO, notifyIncomingMessage };

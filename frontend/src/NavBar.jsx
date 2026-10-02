@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useApp } from './AppContext';
 import { Ico } from './icons';
+import Avatar from './Avatar';
+import { ScrollProgress, MagneticWrap } from './Motion';
 
 function Navbar() {
-  const { user, logout, navigate, page, mobileMenu, setMobileMenu, unreadCount } = useApp();
+  const { user, logout, navigate, page, mobileMenu, setMobileMenu, unreadCount, totalUnread } = useApp();
   const [q, setQ] = useState('');
   const [dropOpen, setDropOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -28,16 +30,18 @@ function Navbar() {
     <header className={`navbar glass ${scrolled ? 'scrolled' : ''}`} data-testid="navbar">
       <div className="container navbar-inner">
         {/* Logo */}
-        <a href="#/" className="logo" onClick={(e)=>{e.preventDefault();navigate('/');}}>
-          <div className="mark">C</div>
-          <span className="hidden sm:block">CampusKart</span>
-        </a>
+        <MagneticWrap strength={0.2}>
+          <a href="#/" className="logo" onClick={(e)=>{e.preventDefault();navigate('/');}}>
+            <div className="mark">C</div>
+            <span className="hidden sm:block">CampusKart</span>
+          </a>
+        </MagneticWrap>
 
         {/* Search */}
         <div className="nav-search hidden md:block">
           <form onSubmit={submit}>
             <Ico n="search" c="w-5 h-5 absolute left-14px top-1/2 -translate-y-1/2 pointer-events-none" style={{position:'absolute',left:14,top:'50%',transform:'translateY(-50%)',width:18,height:18,stroke:'var(--ink-soft)'}}/>
-            <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search textbooks, cycles, gadgets…" style={{paddingLeft:42}}/>
+            <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search textbooks, cycles, gadgets" style={{paddingLeft:42}}/>
           </form>
         </div>
 
@@ -53,17 +57,23 @@ function Navbar() {
               <button className="icon-btn" onClick={()=>navigate('/dashboard/wishlist')} title="Wishlist">
                 <Ico n="heart" c="w-5 h-5"/>
               </button>
+              <button className="icon-btn" onClick={()=>navigate('/dashboard/chats')} title="Messages" aria-label={totalUnread>0?`Messages, ${totalUnread} unread`:'Messages'} style={{position:'relative'}}>
+                <Ico n="message" c="w-5 h-5"/>
+                {totalUnread>0 && (
+                  <span className="nav-badge" key={totalUnread}>{totalUnread>9?'9+':totalUnread}</span>
+                )}
+              </button>
               <button className="icon-btn" onClick={()=>navigate('/dashboard/notifications')} title="Notifications" style={{position:'relative'}}>
                 <Ico n="bell" c="w-5 h-5"/>
                 {unreadCount>0 && (
-                  <span style={{position:'absolute',top:2,right:2,minWidth:16,height:16,padding:'0 4px',borderRadius:999,background:'var(--coral)',color:'#fff',fontSize:10,fontWeight:800,display:'flex',alignItems:'center',justifyContent:'center',border:'1.5px solid var(--cream)'}}>
+                  <span style={{position:'absolute',top:2,right:2,minWidth:16,height:16,padding:'0 4px',borderRadius:999,background:'var(--coral)',color:'#fff',fontSize:10,fontWeight:500,display:'flex',alignItems:'center',justifyContent:'center',border:'2px solid var(--paper)'}}>
                     {unreadCount>9?'9+':unreadCount}
                   </span>
                 )}
               </button>
               <div className="dropdown" ref={dropRef}>
                 <button className="avatar-trigger" onClick={()=>setDropOpen(p=>!p)} data-testid="avatar-trigger" style={{background:'none',border:'none',padding:0,cursor:'pointer'}}>
-                  <div className="avatar">{user.name?.[0]?.toUpperCase()}</div>
+                  <Avatar user={user}/>
                 </button>
                 <div className={`dropdown-menu ${dropOpen?'open':''}`}>
                   <div className="dm-head">
@@ -97,9 +107,10 @@ function Navbar() {
           </button>
         </nav>
       </div>
+      <ScrollProgress/>
       {/* Mobile menu */}
       {mobileMenu && (
-        <div style={{background:'var(--cream)',borderTop:'var(--bw) solid var(--ink)',padding:'16px 24px',display:'flex',flexDirection:'column',gap:8}}>
+        <div style={{background:'var(--cream)',borderTop:'1px solid var(--hairline)',padding:'16px 24px',display:'flex',flexDirection:'column',gap:8}}>
           <form onSubmit={(e)=>{e.preventDefault();navigate(`/marketplace?q=${encodeURIComponent(q)}`);}} style={{marginBottom:8}}>
             <input className="input" value={q} onChange={e=>setQ(e.target.value)} placeholder="Search…"/>
           </form>

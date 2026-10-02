@@ -1,10 +1,11 @@
-/* ── AppContext ────────────────────────────────────────────────────────── */
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { getLS, setLS, uid } from './utils';
 import { api, SOCKET_URL } from './api';
 import { Ico } from './icons';
+import MessagePopups from './MessagePopups';
 
 const AppCtx = createContext(null);
 export const useApp = () => useContext(AppCtx);
@@ -47,6 +48,17 @@ export function AppProvider({ children }) {
   // new chat, so the Dashboard chats section knows which chat to open instead
   // of just landing on the bare list.
   const [openChatId, setOpenChatId] = useState(null);
+
+  // Incoming-message alerts. `popups` is the visible stack of "new message"
+  // cards (one per chat, newest first); `chatUnread` maps chatId -> unread
+  // count and drives the navbar badge, chat-list badges and the tab title.
+  // `activeChatRef` is the chat currently open on screen (set by ChatSection),
+  // so we never pop up about a conversation you're already looking at.
+  const [popups, setPopups] = useState([]);
+  const [chatUnread, setChatUnread] = useState({});
+  const activeChatRef = useRef(null);
+  const setActiveChatId = (id) => { activeChatRef.current = id; };
+  const totalUnread = Object.values(chatUnread).reduce((a, b) => a + b, 0);
 
   // On load, if we have a token from a previous session, verify it against
   // the backend and refresh the user — don't just trust whatever's cached.
@@ -110,6 +122,49 @@ export function AppProvider({ children }) {
     return () => { s.disconnect(); };
   }, [authReady, user?.user_id]);
 
+  const seedChatUnread = (chats) =>
+    setChatUnread(Object.fromEntries(chats.map((c) => [c.id, c.unreadCount || 0])));
+
+  // Seed unread counts from the server once auth settles; clear on logout.
+  useEffect(() => {
+    if (!authReady) return;
+    if (!user) { setChatUnread({}); setPopups([]); return; }
+    api.chats.list()
+      .then(({ data }) => seedChatUnread(data.chats))
+      .catch(() => {}); // non-fatal — badges just start at zero
+  }, [authReady, user?.user_id]);
+
+  // Live: the server tells us about every message addressed to us, whichever
+  // page we're on (unlike 'new_message', which only reaches an opened chat).
+  useEffect(() => {
+    if (!socket) return;
+    const onIncoming = (p) => {
+      const viewing = activeChatRef.current === p.chatId && document.visibilityState === 'visible';
+      if (viewing) return;
+      setChatUnread((prev) => ({ ...prev, [p.chatId]: (prev[p.chatId] || 0) + 1 }));
+      setPopups((prev) => {
+        const existing = prev.find((x) => x.chatId === p.chatId);
+        const entry = {
+          chatId: p.chatId,
+          sender: p.sender,
+          preview: p.hasImage ? 'Sent a photo' : p.text,
+          hasImage: p.hasImage,
+          listingTitle: p.listing?.title || '',
+          count: (existing?.count || 0) + 1,
+          stamp: (existing?.stamp || 0) + 1, // restarts the auto-dismiss timer
+        };
+        return [entry, ...prev.filter((x) => x.chatId !== p.chatId)].slice(0, 3);
+      });
+    };
+    socket.on('message:incoming', onIncoming);
+    return () => socket.off('message:incoming', onIncoming);
+  }, [socket]);
+
+  // "(2) CampusKart" in the browser tab while there are unread messages.
+  useEffect(() => {
+    document.title = totalUnread > 0 ? `(${totalUnread > 9 ? '9+' : totalUnread}) CampusKart` : 'CampusKart';
+  }, [totalUnread]);
+
   // React Router (HashRouter) now owns URL <-> state sync; `page` is just a
   // convenience string derived from the current location for any consumer
   // that used to read it off context.
@@ -141,6 +196,17 @@ export function AppProvider({ children }) {
     setUser(null);
     setLS('ck_user', null);
     setLS('ck_token', null);
+  };
+
+  const dismissPopup = (chatId) => setPopups((p) => p.filter((x) => x.chatId !== chatId));
+  const markChatRead = (chatId) => {
+    setChatUnread((p) => (p[chatId] ? { ...p, [chatId]: 0 } : p));
+    dismissPopup(chatId);
+  };
+  const openPopupChat = (chatId) => {
+    setOpenChatId(chatId);
+    markChatRead(chatId);
+    navigate('/dashboard/chats');
   };
 
   // Optimistic add/remove against the backend, with rollback + a toast if the request fails.
@@ -211,26 +277,35 @@ export function AppProvider({ children }) {
   };
 
   return (
-    <AppCtx.Provider value={{ user, login, logout, authReady, listings, listingsLoading, refreshListings, wishlist, wishlistListings, toggleWishlist, addListing, deleteListing, toast, navigate, page, mobileMenu, setMobileMenu, socket, openChatId, setOpenChatId, notifications, unreadCount, markNotifRead, markAllNotifsRead }}>
+    <AppCtx.Provider value={{ user, login, logout, authReady, listings, listingsLoading, refreshListings, wishlist, wishlistListings, toggleWishlist, addListing, deleteListing, toast, navigate, page, mobileMenu, setMobileMenu, socket, openChatId, setOpenChatId, notifications, unreadCount, markNotifRead, markAllNotifsRead, chatUnread, totalUnread, seedChatUnread, markChatRead, setActiveChatId }}>
       {children}
       <Toaster toasts={toasts} />
+      <MessagePopups popups={popups} onDismiss={dismissPopup} onOpen={openPopupChat} />
     </AppCtx.Provider>
   );
 }
 
 /* ── Toaster ──────────────────────────────────────────────────────────── */
 function Toaster({ toasts }) {
-  if (!toasts.length) return null;
   const icons = { success:'check', error:'x', info:'bell' };
   return (
-    <div className="toast-stack">
-      {toasts.map(t => (
-        <div key={t.id} className={`toast ${t.type}`}>
-          <Ico n={icons[t.type]||'bell'} c="w-5 h-5 flex-shrink-0"/>
-          <span>{t.msg}</span>
-        </div>
-      ))}
+    <div className="toast-stack" aria-live="polite">
+      <AnimatePresence initial={false}>
+        {toasts.map(t => (
+          <motion.div
+            key={t.id}
+            layout
+            className={`toast ${t.type}`}
+            initial={{ opacity: 0, y: 18, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 28, transition: { duration: 0.18 } }}
+            transition={{ type: 'spring', stiffness: 460, damping: 34 }}
+          >
+            <Ico n={icons[t.type]||'bell'} c="w-5 h-5 flex-shrink-0"/>
+            <span>{t.msg}</span>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }
-

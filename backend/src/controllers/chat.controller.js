@@ -4,7 +4,7 @@ const Listing = require('../models/Listing');
 const ApiError = require('../utils/ApiError');
 const ApiResponse = require('../utils/ApiResponse');
 const asyncHandler = require('../utils/asyncHandler');
-const { getIO } = require('../socket');
+const { getIO, notifyIncomingMessage } = require('../socket');
 
 /** GET /api/chats — protected. All chats the logged-in user is part of, most-recently-active first. */
 const getChats = asyncHandler(async (req, res) => {
@@ -14,11 +14,30 @@ const getChats = asyncHandler(async (req, res) => {
     .populate('listing')
     .populate('lastMessage');
 
+  // One aggregate for every chat's unread count (messages from the other
+  // person that this user hasn't seen), instead of a query per chat.
+  const unreadRows = await Message.aggregate([
+    {
+      $match: {
+        chat: { $in: chats.map((c) => c._id) },
+        sender: { $ne: req.user._id },
+        seenBy: { $ne: req.user._id },
+      },
+    },
+    { $group: { _id: '$chat', n: { $sum: 1 } } },
+  ]);
+  const unreadByChat = new Map(unreadRows.map((r) => [r._id.toString(), r.n]));
+
   // The frontend renders "who am I talking to", not "who's in this chat" —
   // collapse participants down to just the other person.
   const shaped = chats.map((c) => {
     const json = c.toJSON();
-    json.otherUser = json.participants.find((p) => p.user_id !== req.user._id.toString()) || null;
+    json.unreadCount = unreadByChat.get(c._id.toString()) || 0;
+    // Populated users may arrive as {user_id} or raw {_id} depending on how the
+    // nested doc was serialised — normalise so "the other person" is always right.
+    const pid = (p) => p.user_id || (p._id && p._id.toString());
+    json.otherUser = json.participants.find((p) => pid(p) !== req.user._id.toString()) || null;
+    if (json.otherUser && !json.otherUser.user_id) json.otherUser.user_id = pid(json.otherUser);
     delete json.participants;
     return json;
   });
@@ -104,6 +123,7 @@ const sendChatImage = asyncHandler(async (req, res) => {
   await chat.save();
 
   getIO().to(chatId).emit('new_message', message);
+  notifyIncomingMessage(chat, message, req.user);
 
   res.status(201).json(new ApiResponse(201, { message }, 'Image sent.'));
 });

@@ -3,7 +3,6 @@ import { useApp } from './AppContext';
 import { Ico } from './icons';
 import { api } from './api';
 
-/* Target: { type: 'listing'|'user', id, label } */
 export function ReportModal({ target, onClose }) {
   const { toast } = useApp();
   const [reason, setReason] = useState('');

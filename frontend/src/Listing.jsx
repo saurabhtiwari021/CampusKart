@@ -10,6 +10,7 @@ import { ReviewForm } from './Reviews';
 import { ListingCard } from './ListingCard';
 import { ReportModal } from './ReportModal';
 import { RentCalendar } from './RentCalendar';
+import { Reveal } from './Reveal';
 
 function ListingDetail({ id }) {
   const { listings, user, wishlist, toggleWishlist, navigate, toast, socket, setOpenChatId } = useApp();
@@ -59,7 +60,7 @@ function ListingDetail({ id }) {
     <div style={{minHeight:'100vh'}}><Navbar/>
       <div className="flex items-center justify-center flex-col gap-4" style={{minHeight:'70vh'}}>
         <Frown className="w-16 h-16" strokeWidth={1.5} style={{color:'var(--text-soft)'}}/>
-        <h2 style={{fontFamily:'var(--font-display)',fontWeight:800}}>Listing not found</h2>
+        <h2 style={{fontFamily:'var(--font-display)',fontWeight:500}}>Listing not found</h2>
         <button className="btn btn-primary" onClick={()=>navigate('/marketplace')}>Browse Marketplace</button>
       </div>
     </div>
@@ -72,9 +73,11 @@ function ListingDetail({ id }) {
     <div style={{minHeight:'100vh'}}>
       <Navbar/>
       <div className="container section" style={{paddingTop:24}}>
-        <button className="btn btn-ghost btn-sm" style={{marginBottom:20}} onClick={()=>window.history.back()}>
-          <Ico n="chevleft" c="w-4 h-4"/> Back
-        </button>
+        <nav className="crumbs" aria-label="Breadcrumb">
+          <button onClick={()=>navigate('/marketplace')}>Marketplace</button><span aria-hidden="true">/</span>
+          <button onClick={()=>navigate(`/marketplace?category=${listing.category}`)}>{listing.category}</button><span aria-hidden="true">/</span>
+          <span aria-current="page">{listing.title}</span>
+        </nav>
 
         <div className="detail-grid">
           {/* Gallery */}
@@ -94,9 +97,9 @@ function ListingDetail({ id }) {
           </div>
 
           {/* Info */}
-          <div>
+          <div className="detail-info">
             <span className={`stamp ${type.cls}`}>{type.label}</span>
-            <h1 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'clamp(1.6rem,3vw,2.2rem)',marginTop:16,lineHeight:1.1}}>{listing.title}</h1>
+            <h1 style={{fontFamily:'var(--font-display)',fontWeight:500,fontSize:'clamp(2rem,3.6vw,3.2rem)',marginTop:18,lineHeight:1.05}}>{listing.title}</h1>
             <div style={{display:'flex',alignItems:'center',gap:12,marginTop:12,fontSize:'.85rem',color:'var(--text-soft)',flexWrap:'wrap'}}>
               <span style={{display:'flex',alignItems:'center',gap:4}}><Ico n="mappin" c="w-4 h-4"/> {listing.location||'Campus'}</span>
               <span>· {listing.condition}</span>
@@ -104,7 +107,7 @@ function ListingDetail({ id }) {
               <span>· {timeAgo(listing.created_at)}</span>
             </div>
 
-            <div className="detail-price">{inr(listing.price)}</div>
+            <div className="detail-price" style={{background:'linear-gradient(135deg, var(--jade), var(--jade-deep))',WebkitBackgroundClip:'text',color:'transparent'}}>{inr(listing.price)}</div>
             {listing.type==='rent' && (
               <p style={{fontSize:'.9rem',color:'var(--text-soft)',marginTop:-8}}>
                 {listing.rental_duration} {listing.deposit>0 && `· ₹${listing.deposit} deposit`}
@@ -125,7 +128,7 @@ function ListingDetail({ id }) {
             </div>
 
             {isOwner && (
-              <div className="flex items-center gap-2" style={{background:'#F5EFFF',border:'2px solid var(--violet)',borderRadius:18,padding:14,marginTop:16,fontSize:'.88rem',fontWeight:600}}>
+              <div className="flex items-center gap-2" style={{background:'var(--tint)',border:'1px solid var(--tone-deep)',borderRadius:18,padding:14,marginTop:16,fontSize:'.88rem',fontWeight:600}}>
                 <Crown className="w-4 h-4" strokeWidth={2.25} style={{color:'var(--violet)'}}/> This is your listing
               </div>
             )}
@@ -135,9 +138,19 @@ function ListingDetail({ id }) {
 
             {/* Description */}
             <div style={{marginTop:28}}>
-              <h3 style={{fontFamily:'var(--font-display)',fontWeight:700,fontSize:'1.1rem',marginBottom:10}}>Description</h3>
+              <h3 style={{fontFamily:'var(--font-display)',fontSize:'1.4rem',marginBottom:12,paddingTop:24,borderTop:'1px solid var(--hairline)'}}>Description</h3>
               <p style={{color:'var(--text-soft)',lineHeight:1.7,whiteSpace:'pre-line'}}>{listing.description||'No description provided.'}</p>
             </div>
+
+            {/* Details */}
+            <dl className="spec" style={{marginTop:28}}>
+              <dt>Category</dt><dd>{listing.category}</dd>
+              {listing.condition && <><dt>Condition</dt><dd>{listing.condition}</dd></>}
+              <dt>Pickup</dt><dd>{listing.location||'Campus'}</dd>
+              {listing.type==='rent' && listing.rental_duration && <><dt>Rental</dt><dd>{listing.rental_duration}</dd></>}
+              {listing.type==='rent' && listing.deposit>0 && <><dt>Deposit</dt><dd>₹{listing.deposit}</dd></>}
+              <dt>Listed</dt><dd>{timeAgo(listing.created_at)}</dd>
+            </dl>
 
             {/* Tags */}
             {listing.tags?.length>0 && (
@@ -153,10 +166,10 @@ function ListingDetail({ id }) {
                 <div style={{flex:1}}>
                   <div style={{fontFamily:'var(--font-display)',fontWeight:700,display:'flex',alignItems:'center',gap:8}}>
                     {listing.owner.name}
-                    <Ico n="shield" c="w-4 h-4" style={{stroke:'#3b82f6'}}/>
+                    <Ico n="shield" c="w-4 h-4" style={{stroke:'var(--sage-deep)'}}/>
                   </div>
                   <div className="flex items-center gap-1 flex-wrap" style={{fontSize:'.82rem',color:'var(--text-soft)',marginTop:2}}>
-                    {listing.owner.rating>0 && <><Star className="w-3.5 h-3.5" style={{fill:'var(--yellow)',stroke:'var(--ink)'}}/> {listing.owner.rating} · {listing.owner.review_count} reviews ·</>} {listing.owner.college}
+                    {listing.owner.rating>0 && <><Star className="w-3.5 h-3.5" style={{fill:'var(--ochre)',stroke:'var(--ochre)'}}/> {listing.owner.rating} · {listing.owner.review_count} reviews ·</>} {listing.owner.college}
                   </div>
                 </div>
               </div>
@@ -165,7 +178,7 @@ function ListingDetail({ id }) {
             {/* Leave a review — only once the listing is sold/rented and you're not the owner */}
             {canReview && (
               reviewSubmitted ? (
-                <div className="flex items-center gap-2" style={{background:'#EAF9F0',border:'2px solid var(--teal)',borderRadius:18,padding:14,marginTop:16,fontSize:'.88rem',fontWeight:600}}>
+                <div className="flex items-center gap-2" style={{background:'#EEF3EC',border:'1px solid var(--sage)',borderRadius:18,padding:14,marginTop:16,fontSize:'.88rem',fontWeight:600}}>
                   <CheckCircle2 className="w-4 h-4" strokeWidth={2.25} style={{color:'var(--teal)'}}/> Thanks for your review!
                 </div>
               ) : (
@@ -179,10 +192,12 @@ function ListingDetail({ id }) {
 
         {/* Related */}
         {related.length>0 && (
-          <div style={{marginTop:60}}>
-            <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'1.6rem',marginBottom:24}}>Related Listings</h2>
+          <div style={{marginTop:80}}>
+            <Reveal blur>
+              <h2 style={{fontFamily:'var(--font-display)',fontWeight:400,fontSize:'2.2rem',marginBottom:40,textAlign:'center',background:'linear-gradient(135deg, var(--ink), var(--jade))',WebkitBackgroundClip:'text',color:'transparent'}}>You may also like</h2>
+            </Reveal>
             <div className="grid-listings">
-              {related.map((l,i)=><ListingCard key={l.id} listing={l} index={i}/>)}
+              {related.map((l,i)=><Reveal key={l.id} delay={i*80} scale><ListingCard listing={l} index={i}/></Reveal>)}
             </div>
           </div>
         )}
@@ -192,7 +207,7 @@ function ListingDetail({ id }) {
       {zoom && (
         <div className="overlay" onClick={()=>setZoom(false)}>
           <div style={{maxWidth:760,width:'100%'}} onClick={e=>e.stopPropagation()}>
-            <img src={listing.images?.[active]} alt={listing.title} style={{width:'100%',borderRadius:26,border:'3px solid var(--ink)'}}/>
+            <img src={listing.images?.[active]} alt={listing.title} style={{width:'100%',borderRadius:26,border:'none'}}/>
           </div>
         </div>
       )}
@@ -201,7 +216,7 @@ function ListingDetail({ id }) {
       {chatOpen && (
         <div className="overlay" onClick={()=>setChatOpen(false)}>
           <div className="modal" onClick={e=>e.stopPropagation()}>
-            <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,marginBottom:16}}>Message {listing.owner?.name}</h2>
+            <h2 style={{fontFamily:'var(--font-display)',fontWeight:500,marginBottom:16}}>Message {listing.owner?.name}</h2>
             <textarea className="input" value={msg} onChange={e=>setMsg(e.target.value)} placeholder={`Hi! Is "${listing.title}" still available?`} style={{minHeight:120}}/>
             <div style={{display:'flex',gap:10,marginTop:16}}>
               <button className="btn" onClick={()=>setChatOpen(false)}>Cancel</button>

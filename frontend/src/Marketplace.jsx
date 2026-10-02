@@ -8,6 +8,7 @@ import { ListingCard, CardSkeleton } from './ListingCard';
 import { CATS, CONDITIONS, TYPES, TYPE_META } from './constants';
 import { inr } from './utils';
 import { api } from './api';
+import { Reveal } from './Reveal';
 
 function Marketplace() {
   const { navigate, toast } = useApp();
@@ -57,21 +58,21 @@ function Marketplace() {
     <div style={{minHeight:'100vh'}}>
       <Navbar/>
       <div className="container section" style={{paddingTop:32}}>
-        <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',marginBottom:24,flexWrap:'wrap',gap:12}}>
+        <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',marginBottom:44,flexWrap:'wrap',gap:16}}>
           <div>
-            <h1 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:'clamp(1.8rem,4vw,2.4rem)'}}>
+            <h1 style={{fontFamily:'var(--font-display)',fontSize:'clamp(2.4rem,5vw,4rem)',fontWeight:400,lineHeight:1,background:'linear-gradient(135deg, var(--ink), var(--jade-deep))',WebkitBackgroundClip:'text',color:'transparent'}}>
               {appliedSearch ? `Results for "${appliedSearch}"` : 'Marketplace'}
             </h1>
             <p style={{color:'var(--text-soft)',marginTop:4}}>{loading ? 'Searching…' : `${results.length} items available`}</p>
           </div>
           <div style={{display:'flex',alignItems:'center',gap:10}}>
-            <select className="input" style={{width:'auto',padding:'9px 16px'}} value={sort} onChange={e=>setSort(e.target.value)}>
+            <select className="input" style={{width:'auto',padding:'10px 18px',borderRadius:999}} value={sort} onChange={e=>setSort(e.target.value)}>
               <option value="latest">Latest</option>
               <option value="price_low">Price: Low to High</option>
               <option value="price_high">Price: High to Low</option>
               <option value="popular">Most Popular</option>
             </select>
-            <div style={{display:'flex',borderRadius:999,border:'1.5px solid var(--border-strong)',overflow:'hidden',boxShadow:'var(--sh-1) var(--shadow-col)'}}>
+            <div style={{display:'flex',borderRadius:999,border:'1px solid var(--hairline-strong)',overflow:'hidden'}}>
               <button onClick={()=>setView('grid')} style={{padding:'9px 12px',background:view==='grid'?'var(--ink)':'var(--white)',color:view==='grid'?'var(--cream)':'var(--ink)',border:'none',cursor:'pointer',transition:'background .18s ease'}}><Ico n="grid" c="w-4 h-4"/></button>
               <button onClick={()=>setView('list')} style={{padding:'9px 12px',background:view==='list'?'var(--ink)':'var(--white)',color:view==='list'?'var(--cream)':'var(--ink)',border:'none',borderLeft:'1.5px solid var(--border-strong)',cursor:'pointer',transition:'background .18s ease'}}><Ico n="list" c="w-4 h-4"/></button>
             </div>
@@ -80,15 +81,15 @@ function Marketplace() {
 
         <div className="market-layout">
           {/* Filters */}
-          <aside className="filters card" style={{padding:20}}>
-            <div style={{display:'flex',alignItems:'center',gap:8,fontFamily:'var(--font-display)',fontWeight:700,marginBottom:20}}>
-              <Ico n="sliders" c="w-4 h-4"/> Filters
+          <aside className="filters">
+            <div style={{display:'flex',alignItems:'center',gap:8,fontFamily:'var(--font-display)',fontSize:'1.5rem',marginBottom:28}}>
+              <Ico n="sliders" c="w-4 h-4"/> Filter
             </div>
 
             {/* Search */}
             <form className="filter-block" onSubmit={submitSearch}>
               <div className="filter-label">Search</div>
-              <input className="input" placeholder="Keywords… (press Enter)" value={search} onChange={e=>setSearch(e.target.value)} style={{padding:'9px 12px',fontSize:'.88rem'}}/>
+              <input className="input" placeholder="Keywords, then Enter" value={search} onChange={e=>setSearch(e.target.value)} style={{padding:'9px 12px',fontSize:'.88rem'}}/>
             </form>
 
             {/* Type */}
@@ -149,17 +150,17 @@ function Marketplace() {
               <div className={view==='grid' ? 'grid-listings' : ''} style={view==='list'?{display:'flex',flexDirection:'column',gap:16}:{}}>
                 {results.map((l,i)=>(
                   view==='list' ? (
-                    <div key={l.id} className="table-row" style={{cursor:'pointer'}} onClick={()=>navigate(`/listing/${l.id}`)}>
-                      <img src={l.images?.[0]||'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=300&q=80'} alt={l.title} className="w-20 h-20 aspect-square object-cover rounded-xl flex-shrink-0" style={{border:'1.5px solid var(--border-strong)'}}/>
+                    <Reveal key={l.id} delay={Math.min(i*50,300)} as="div" className="table-row" style={{cursor:'pointer'}} onClick={()=>navigate(`/listing/${l.id}`)}>
+                      <img src={l.images?.[0]||'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=300&q=80'} alt={l.title} className="w-20 h-20 aspect-square object-cover rounded-xl flex-shrink-0" style={{border:'1px solid var(--hairline)'}}/>
                       <div className="grow">
                         <div className="ttl">{l.title}</div>
                         <div style={{fontSize:'.82rem',color:'var(--text-soft)',marginTop:4}}>{l.category} · {l.condition} · {l.location}</div>
                         <span className={`stamp ${TYPE_META[l.type]?.cls} mt-2`} style={{display:'inline-flex',marginTop:8,fontSize:10}}>{TYPE_META[l.type]?.label}</span>
                       </div>
-                      <div style={{fontFamily:'var(--font-display)',fontWeight:800,color:'var(--violet-deep)',fontSize:'1.15rem',flexShrink:0}}>{inr(l.price)}</div>
-                    </div>
+                      <div style={{fontFamily:'var(--font-display)',fontWeight:500,color:'var(--violet-deep)',fontSize:'1.15rem',flexShrink:0}}>{inr(l.price)}</div>
+                    </Reveal>
                   ) : (
-                    <ListingCard key={l.id} listing={l} index={i}/>
+                    <Reveal key={l.id} delay={Math.min(i*50,300)} scale><ListingCard listing={l} index={i}/></Reveal>
                   )
                 ))}
               </div>

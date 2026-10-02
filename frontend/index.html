@@ -3,11 +3,31 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#6C3CE9" />
-<title>CampusKart — Campus Marketplace</title>
+<meta name="theme-color" content="#FDFBF7" />
+<title>CampusKart</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,200..700;1,6..72,200..700&display=swap" rel="stylesheet" />
+<style>
+  /* Premium loading screen to avoid FOUC */
+  #root:empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #FDFBF7;
+  }
+  #root:empty::after {
+    content: '';
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(13,107,78,0.15);
+    border-top-color: #0D6B4E;
+    border-radius: 50%;
+    animation: _ck-spin 0.7s linear infinite;
+  }
+  @keyframes _ck-spin { to { transform: rotate(360deg); } }
+</style>
 </head>
 <body>
 <div id="root"></div>
